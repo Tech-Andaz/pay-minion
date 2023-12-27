@@ -84,6 +84,17 @@ class PayFastAPI
         }
     }
 
+    public function dynamicRedirect($order_data){
+        $form_submission_url = $this->PayFastClient->api_url . 'Transaction/PostTransaction';
+        $form = $this->generateForm($order_data, $form_submission_url);
+        $form .= '<script>
+            document.addEventListener("DOMContentLoaded", function() {
+                document.getElementById("payfast_payment_form").submit();
+            });
+        </script>';
+        echo $form;
+        return;
+    }
     public function generateForm($order, $url){
         $form = '<form id="payfast_payment_form" name="payfast-payment-form" method="post" action="' . $url . '" style="display:none;">
             <input type="TEXT" name="CURRENCY_CODE" value="' . $order['CURRENCY_CODE'] . '" /><br />

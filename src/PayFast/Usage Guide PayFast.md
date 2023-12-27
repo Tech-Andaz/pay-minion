@@ -3,6 +3,7 @@
 ## Table of Contents - PayFast Usage Guide
 - [Initialize PayFast Client](#initialize)
 - [Create Checkout Link](#create-checkout-link)
+- [Dynamic Redirect](#dynamic-redirect)
 - [Get Form Fields](#get-form-fields)
 ## Initialize
 
@@ -56,6 +57,82 @@ try {
 } catch (TechAndaz\PayFast\PayFastException $e) {
     echo "Error: " . $e->getMessage() . "\n";
 }
+?>
+```
+## Dynamic Redirect
+
+Dynamic Redirect allows you redirect user to the payment page without having to configure a page for the form. This is useful if you want to first return the checkout data and then redirect dynamically.
+
+### Step 1 - Get Checkout Data
+
+```php
+<?php
+try {
+    $data = array(
+        "TXNAMT" => 5000,
+        "BASKET_ID" => "", // Optional - Will generate unique ID if not provided
+        "currency_code" =>  "PKR", // Optional - Will use one set during initializing
+        "success_url" =>  "https://techandaz.com/success", // Optional - Will use one set during initializing
+        "cancel_url" =>  "https://techandaz.com/success", // Optional - Will use one set during initializing
+        "checkout_url" =>  "https://techandaz.com/success", // Optional - Will use one set during initializing
+        "customer_email" => "test@test.com",
+        "customer_phone" => "+921234567899",
+        "order_date" => "2023-12-01 12:00:00", // Optional - Will use date(Y-m-d H:i:s) if not provided
+        "proccode" => "00", // Optional - will use one set during initializing
+        "tran_type" => "ECOMM_PURCHASE", // Optional - will use one set during initializing
+    );
+    $response_type = "data"; // form / redirect / data - Defaults to redirect, Redirect will automatically redirect user to payment page, form will return an HTML form ready for submission, data will return array with all values
+    $response = $PayFastAPI->createCheckoutLink($data, $response_type);
+    return $response;
+} catch (TechAndaz\PayFast\PayFastException $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+
+
+### Step 2 - Call Dynamic Checkout
+
+```php
+<?php
+try {
+    $PayFastAPI->dynamicRedirect($response);
+    return;
+} catch (TechAndaz\PayFast\PayFastException $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+
+
+### Complete Example 
+
+```php
+<?php
+try {
+        $data = array(
+            "TXNAMT" => 5000,
+            "BASKET_ID" => "", // Optional - Will generate unique ID if not provided
+            "currency_code" =>  "PKR", // Optional - Will use one set during initializing
+            "success_url" =>  "https://techandaz.com/success", // Optional - Will use one set during initializing
+            "cancel_url" =>  "https://techandaz.com/success", // Optional - Will use one set during initializing
+            "checkout_url" =>  "https://techandaz.com/success", // Optional - Will use one set during initializing
+            "customer_email" => "test@test.com",
+            "customer_phone" => "+921234567899",
+            "order_date" => "2023-12-01 12:00:00", // Optional - Will use date(Y-m-d H:i:s) if not provided
+            "proccode" => "00", // Optional - will use one set during initializing
+            "tran_type" => "ECOMM_PURCHASE", // Optional - will use one set during initializing
+        );
+        $response_type = "data"; // form / redirect / data - Defaults to redirect, Redirect will automatically redirect user to payment page, form will return an HTML form ready for submission, data will return array with all values
+        $response = $PayFastAPI->createCheckoutLink($data, $response_type);
+
+        //Use $response data
+
+        $PayFastAPI->dynamicRedirect($response);
+        return;
+    } catch (TechAndaz\PayFast\PayFastException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
 ?>
 ```
 ## Get Form Fields
