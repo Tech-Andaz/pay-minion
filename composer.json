@@ -1,0 +1,18 @@
+{
+    "name": "tech-andaz/ship-drill",
+    "description": "Tech Andaz's library for managing multiple shipping/logistic companies",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Tech Andaz",
+            "email": "contact@techandaz.com"
+        }
+    ],
+    "require": {
+    },
+    "autoload": {
+        "psr-4": {
+            "TechAndaz\\": "src/"
+        }
+    }
+}
