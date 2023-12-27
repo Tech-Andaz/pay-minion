@@ -20,7 +20,7 @@ composer require tech-andaz/pay-minion
 
 | Provider | Usage Guide | API Doc |
 | -------- | ------- | ------- |
-|Safe Pay|[Safe Pay Usage Guide](src/SafePay/Usage%20Guide%SafePay.md)| [Safe Pay API Docs](src/SafePay/API%20Document%20-%20SafePay.pdf)|
+|Safe Pay|[Safe Pay Usage Guide](src/SafePay/Usage%20Guide%20SafePay.md)| [Safe Pay API Docs](src/SafePay/API%20Document%20-%20SafePay.pdf)|
 
 ## License
 
