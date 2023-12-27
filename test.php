@@ -2,61 +2,73 @@
 
 require 'vendor/autoload.php';
 
-use TechAndaz\UBL\UBLClient;
-use TechAndaz\UBL\UBLAPI;
+use TechAndaz\PayFast\PayFastClient;
+use TechAndaz\PayFast\PayFastAPI;
 
-$UBLClient = new UBLClient(array(
-    "api_url" =>"https://demo-ipg.ctdev.comtrust.ae:2443/", // Optional - Defaults to Production URL
-    "customer" => "Demo Merchant", // Optional - Defaults to Pay Minion
-    "store" =>  "0000", // Optional - Defaults to 0000
-    "terminal" =>  "0000", // Optional - Defaults to 0000
-    "channel" =>  "Web", // Optional - Defaults to Web
-    "currency" =>  "PKR", // Optional - Defaults to PKR
-    "transaction_hint" =>  "CPT:Y", // Optional - Defaults to CPT:Y. Options are: CPT:N (Authorize, capture to be called seperate). CPT:Y (Capture)
-    "callback_url" =>  "https://techandaz.com/success", // Required/Optional - Must be provided either during initialize or during checkout link creation.
-    "username" => "Demo_fY9c",
-    "password" => "Comtrust@20182018",
+$PayFastClient = new PayFastClient(array(
+    "api_url" =>"https://ipguat.apps.net.pk/", // Optional - Defaults to Production URL
+    "merchant_id" => "12755",
+    "api_password" =>  "EPxDB03HcU7yzIgstwwj",
+    "merchant_name" =>  "Pay Minion",
+    "success_url" =>  "https://techandaz.com/success", // Required/Optional - Must be provided either during initialize or during checkout link creation.
+    "cancel_url" =>  "https://techandaz.com/cancel", // Optional - Defaults to success url
+    "checkout_url" =>  "https://techandaz.com/checkout", // Optional - Defaults to success url
+    "currency_code" =>  "PKR", // Optional - Defaults to PKR. If provided will default for all transactions except when explicitly mentioned
+    "proccode" =>  "00", // Optional - Defaults to 00. If provided will default for all transactions except when explicitly mentioned
+    "tran_type" =>  "ECOMM_PURCHASE", // Optional - Defaults to ECOMM_PURCHASE. If provided will default for all transactions except when explicitly mentioned
 ));
-$UBLAPI = new UBLAPI($UBLClient);
+
+$PayFastAPI = new PayFastAPI($PayFastClient);
 
 //Create Checkout Link
-function createCheckoutLink($UBLAPI){
+function createCheckoutLink($PayFastAPI){
     try {
         $data = array(
-            "Customer" => "", // Optional - Will use default or value set during initialize. Will override if provided
-            "Store" => "", // Optional - Will use default or value set during initialize. Will override if provided
-            "Terminal" => "", // Optional - Will use default or value set during initialize. Will override if provided
-            "Channel" => "", // Optional - Will use default or value set during initialize. Will override if provided
-            "Currency" => "", // Optional - Will use default or value set during initialize. Will override if provided
-            "OrderID" => "", // Optional - Will generate unique ID if not provided
-            "OrderInfo" => "", // Optional
-            "TransactionHint" => "", // Optional - Will use default or value set during initialize. Will override if provided
-            "ReturnPath" => "", // Required / Optional - Will use value set during initialize if not provided. If both not provided will throw error
-            "UserName" => "", // Optional - Will use value provided during initialize or over ride if provided
-            "Password" => "", // Optional - Will use value provided during initialize or over ride if provided
-            "Amount" => 5000,
-            "OrderName" => "Order from Tech Andaz",
+            "TXNAMT" => 5000,
+            "BASKET_ID" => "", // Optional - Will generate unique ID if not provided
+            "currency_code" =>  "PKR", // Optional - Will use one set during initializing
+            "success_url" =>  "https://techandaz.com/success", // Optional - Will use one set during initializing
+            "cancel_url" =>  "https://techandaz.com/success", // Optional - Will use one set during initializing
+            "checkout_url" =>  "https://techandaz.com/success", // Optional - Will use one set during initializing
+            "customer_email" => "test@test.com",
+            "customer_phone" => "+921234567899",
+            "order_date" => "2023-12-01 12:00:00", // Optional - Will use date(Y-m-d H:i:s) if not provided
+            "proccode" => "00", // Optional - will use one set during initializing
+            "tran_type" => "ECOMM_PURCHASE", // Optional - will use one set during initializing
         );
-        $response = $UBLAPI->createCheckoutLink($data);
+        $response_type = "redirect"; // form / redirect / data - Defaults to redirect, Redirect will automatically redirect user to payment page, form will return an HTML form ready for submission, data will return array with all values
+        $response = $PayFastAPI->createCheckoutLink($data, $response_type);
         return $response;
-    } catch (TechAndaz\UBL\UBLException $e) {
+    } catch (TechAndaz\PayFast\PayFastException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
 
 //Get Form Fields
-function getFormFields($UBLAPI){
+function getFormFields($PayFastAPI){
     try { 
         $config = array(
             "response" => "form",
             "label_class" => "form-label",
             "input_class" => "form-control",
             "wrappers" => array(
-                "Amount" => array(
+                "CUSTOMER_EMAIL_ADDRESS" => array(
                     "input_wrapper_start" => '<div class="mb-3 col-md-6">',
                     "input_wrapper_end" => "</div>"
                 ),
-                "OrderName" => array(
+                "CUSTOMER_MOBILE_NO" => array(
+                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
+                    "input_wrapper_end" => "</div>"
+                ),
+                "TXNAMT" => array(
+                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
+                    "input_wrapper_end" => "</div>"
+                ),
+                "BASKET_ID" => array(
+                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
+                    "input_wrapper_end" => "</div>"
+                ),
+                "ORDER_DATE" => array(
                     "input_wrapper_start" => '<div class="mb-3 col-md-6">',
                     "input_wrapper_end" => "</div>"
                 ),
@@ -65,12 +77,12 @@ function getFormFields($UBLAPI){
             "optional_selective" => array(
             ),
         );
-        $response = $UBLAPI->getFormFields($config);
+        $response = $PayFastAPI->getFormFields($config);
         return $response;
-    } catch (TechAndaz\UBL\UBLException $e) {
+    } catch (TechAndaz\PayFast\PayFastException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-// echo json_encode(createCheckoutLink($UBLAPI));
-echo (getFormFields($UBLAPI));
+// echo json_encode(createCheckoutLink($PayFastAPI));
+echo (getFormFields($PayFastAPI));
 ?>
