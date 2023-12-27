@@ -20,9 +20,7 @@ composer require tech-andaz/pay-minion
 
 | Provider | Usage Guide | API Doc |
 | -------- | ------- | ------- |
-|Trax Logistics|[Trax Usage Guide](src/Trax/Usage%20Guide%20Trax.md)| [Trax API Docs](src/Trax/API%20Document%20-%20Trax.pdf)|
-|PandaGo|[PandaGo Usage Guide](src/PandaGo/Usage%20Guide%20PandaGo.md)| [PandaGo API Docs](https://pandago.docs.apiary.io/)|
-|BlueEx|[BlueEx Usage Guide](src/BlueEx/Usage%20Guide%20BlueEx.md)| [BlueEx API Docs](https://beta.blue-ex.com/developer-center/open-api-json)|
+|Safe Pay|[Safe Pay Usage Guide](src/SafePay/Usage%20Guide%SafePay.md)| [Safe Pay API Docs](src/SafePay/API%20Document%20-%20SafePay.pdf)|
 
 ## License
 
