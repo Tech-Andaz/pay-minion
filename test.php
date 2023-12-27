@@ -2,94 +2,75 @@
 
 require 'vendor/autoload.php';
 
-use TechAndaz\SafePay\SafePayClient;
-use TechAndaz\SafePay\SafePayAPI;
+use TechAndaz\UBL\UBLClient;
+use TechAndaz\UBL\UBLAPI;
 
-$SafePayClient = new SafePayClient(array(
-    "environment" =>"sandbox",
-    "apiKey" => "sec_14243867-4988-424b-a2f8-d138d38deb3e",
-    "v1Secret" =>  "d11bf1408f381b8048d23d57bf628924b63e58f57fd4f72e622fa8623382a9aa",
-    "webhookSecret" =>  "175f26b3c3fd27f4f18ac1048d9721794e1934481d83dd010e083590c4decc3e",
-    "success_url" => "https://techandaz.com/success",
-    "cancel_url" => "https://techandaz.com/cancel",
+$UBLClient = new UBLClient(array(
+    "api_url" =>"https://demo-ipg.ctdev.comtrust.ae:2443/", // Optional - Defaults to Production URL
+    "customer" => "Demo Merchant", // Optional - Defaults to Pay Minion
+    "store" =>  "0000", // Optional - Defaults to 0000
+    "terminal" =>  "0000", // Optional - Defaults to 0000
+    "channel" =>  "Web", // Optional - Defaults to Web
+    "currency" =>  "PKR", // Optional - Defaults to PKR
+    "transaction_hint" =>  "CPT:Y", // Optional - Defaults to CPT:Y. Options are: CPT:N (Authorize, capture to be called seperate). CPT:Y (Capture)
+    "callback_url" =>  "https://techandaz.com/success", // Required/Optional - Must be provided either during initialize or during checkout link creation.
+    "username" => "Demo_fY9c",
+    "password" => "Comtrust@20182018",
 ));
-$SafePayAPI = new SafePayAPI($SafePayClient);
+$UBLAPI = new UBLAPI($UBLClient);
 
 //Create Checkout Link
-function createCheckoutLink($SafePayAPI){
+function createCheckoutLink($UBLAPI){
     try {
         $data = array(
-            "amount" => 5000,
-            "order_id" => "TA-001",
-            "source" => "Tech Andaz",
-            "webhooks" => "true",
+            "Customer" => "", // Optional - Will use default or value set during initialize. Will override if provided
+            "Store" => "", // Optional - Will use default or value set during initialize. Will override if provided
+            "Terminal" => "", // Optional - Will use default or value set during initialize. Will override if provided
+            "Channel" => "", // Optional - Will use default or value set during initialize. Will override if provided
+            "Currency" => "", // Optional - Will use default or value set during initialize. Will override if provided
+            "OrderID" => "", // Optional - Will generate unique ID if not provided
+            "OrderInfo" => "", // Optional
+            "TransactionHint" => "", // Optional - Will use default or value set during initialize. Will override if provided
+            "ReturnPath" => "", // Required / Optional - Will use value set during initialize if not provided. If both not provided will throw error
+            "UserName" => "", // Optional - Will use value provided during initialize or over ride if provided
+            "Password" => "", // Optional - Will use value provided during initialize or over ride if provided
+            "Amount" => 5000,
+            "OrderName" => "Order from Tech Andaz",
         );
-        $response = $SafePayAPI->createCheckoutLink($data);
+        $response = $UBLAPI->createCheckoutLink($data);
         return $response;
-    } catch (TechAndaz\SafePay\SafePayException $e) {
-        echo "Error: " . $e->getMessage() . "\n";
-    }
-}
-
-//Verify Signature Success
-function verifySuccessSignature($SafePayAPI){
-    try {
-        $tracker = $_POST['tracker'];
-        $signature = $_POST['sig'];
-        $response = $SafePayAPI->verifySuccessSignature($tracker, $signature);
-        return $response;
-    } catch (TechAndaz\SafePay\SafePayException $e) {
-        echo "Error: " . $e->getMessage() . "\n";
-    }
-}
-
-//Verify Signature Webhooks
-function verifyWebhookSignature($SafePayAPI){
-    try {
-        $response = $SafePayAPI->verifyWebhookSignature();
-        return $response;
-    } catch (TechAndaz\SafePay\SafePayException $e) {
+    } catch (TechAndaz\UBL\UBLException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
 
 //Get Form Fields
-function getFormFields($SafePayAPI){
+function getFormFields($UBLAPI){
     try { 
         $config = array(
             "response" => "form",
             "label_class" => "form-label",
             "input_class" => "form-control",
             "wrappers" => array(
-                "amount" => array(
+                "Amount" => array(
                     "input_wrapper_start" => '<div class="mb-3 col-md-6">',
                     "input_wrapper_end" => "</div>"
                 ),
-                "order_id" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "source" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "webhooks" => array(
+                "OrderName" => array(
                     "input_wrapper_start" => '<div class="mb-3 col-md-6">',
                     "input_wrapper_end" => "</div>"
                 ),
             ),
-            "optional" => true,
+            "optional" => false,
             "optional_selective" => array(
             ),
         );
-        $response = $SafePayAPI->getFormFields($config);
+        $response = $UBLAPI->getFormFields($config);
         return $response;
-    } catch (TechAndaz\SafePay\SafePayException $e) {
+    } catch (TechAndaz\UBL\UBLException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-// echo json_encode(createCheckoutLink($SafePayAPI));
-// echo json_encode(verifySuccessSignature($SafePayAPI));
-// echo json_encode(verifyWebhookSignature($SafePayAPI));
-echo (getFormFields($SafePayAPI));
+// echo json_encode(createCheckoutLink($UBLAPI));
+echo (getFormFields($UBLAPI));
 ?>
