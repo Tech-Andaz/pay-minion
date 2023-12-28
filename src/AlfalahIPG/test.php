@@ -2,280 +2,134 @@
 
 require 'vendor/autoload.php';
 
-use TechAndaz\BlueEx\BlueExClient;
-use TechAndaz\BlueEx\BlueExAPI;
+use TechAndaz\AlfalahIPG\AlfalahIPGClient;
+use TechAndaz\AlfalahIPG\AlfalahIPGAPI;
 
-$BlueExClient = new BlueExClient("KHI-00000", "64jkuyeh75hkjstgh87", "https://bigazure.com/api/json_v3/");
-$BlueExAPI = new BlueExAPI($BlueExClient);
+$AlfalahIPGClient = new AlfalahIPGClient(array(
+    "environment" =>"production", // Optional - Defaults to production
+    "merchant_id" => "YOURMERCHANTID",
+    "merchant_name" =>  "Pay Minion",
+    "password" =>  "YOURMERCHANTPASSWORD",
+    "operator_id" =>  "YOUROPERATORID",  // Optional
+    "api_key" =>  "YOURAPIKEY", // Optional 
+    "return_url" =>  "https://techandaz.com/success", // Required/Optional - Must be provided either during initialize or during checkout link creation.
+    "transaction_type" =>"PURCHASE", // Optional - Defaults to PURCHASE. Options are: PURCHASE / AUTHORIZE / VERIFY / NONE
+    "currency_code" =>  "PKR",
+));
 
-//Get All Pickup Locations
-function getAllPickupLocations($BlueExAPI){
-    try {
-        $response = $BlueExAPI->getAllPickupLocations();
-        return $response;
-    } catch (TechAndaz\BlueEx\BlueExException $e) {
-        echo "Error: " . $e->getMessage() . "\n";
-    }
-}
+$AlfalahIPGAPI = new AlfalahIPGAPI($AlfalahIPGClient);
 
-//Get Specific Pickup Location
-function getPickupLocation($BlueExAPI){
-    try {
-        $location_id = 31;
-        $response = $BlueExAPI->getPickupLocation($location_id);
-        return $response;
-    } catch (TechAndaz\BlueEx\BlueExException $e) {
-        echo "Error: " . $e->getMessage() . "\n";
-    }
-}
-
-//Get Shipment Status
-function getShipmentStatus($BlueExAPI){
-    try {
-        $consignment_no = "5027729334";
-        $response = $BlueExAPI->getShipmentStatus($consignment_no);
-        return $response;
-    } catch (TechAndaz\BlueEx\BlueExException $e) {
-        echo "Error: " . $e->getMessage() . "\n";
-    }
-}
-
-//Get Shipment Settlement
-function getShipmentSettlement($BlueExAPI){
-    try {
-        $consignment_no = "5027729334";
-        $response = $BlueExAPI->getShipmentSettlement($consignment_no);
-        return $response;
-    } catch (TechAndaz\BlueEx\BlueExException $e) {
-        echo "Error: " . $e->getMessage() . "\n";
-    }
-}
-
-//Get Shipment Info
-function getShipmentInfo($BlueExAPI){
-    try {
-        $consignment_no = "5027729334";
-        $response = $BlueExAPI->getShipmentInfo($consignment_no);
-        return $response;
-    } catch (TechAndaz\BlueEx\BlueExException $e) {
-        echo "Error: " . $e->getMessage() . "\n";
-    }
-}
-
-//Get Shipment Info
-function getShipmentTracking($BlueExAPI){
-    try {
-        $consignment_no = "5027729334";
-        $response = $BlueExAPI->getShipmentTracking($consignment_no);
-        return $response;
-    } catch (TechAndaz\BlueEx\BlueExException $e) {
-        echo "Error: " . $e->getMessage() . "\n";
-    }
-}
-
-//Get Cities
-function getCities($BlueExAPI){
-    try {
-        $country_code = "PK";
-        $response = $BlueExAPI->getCities($country_code);
-        return $response;
-    } catch (TechAndaz\BlueEx\BlueExException $e) {
-        echo "Error: " . $e->getMessage() . "\n";
-    }
-}
-
-//Get Service Type
-function getServiceType($BlueExAPI){
-    try {
-        $response = $BlueExAPI->getServiceType();
-        return $response;
-    } catch (TechAndaz\BlueEx\BlueExException $e) {
-        echo "Error: " . $e->getMessage() . "\n";
-    }
-}
-
-//Create Shipment
-function createShipment($BlueExAPI){
+//Create Checkout Link
+function createCheckoutLink($AlfalahIPGAPI){
     try {
         $data = array(
-            "shipper_name" => "Mubeen Dewani",
-            "shipper_email" => "mubeen.dewani@blue-ex.com",
-            "shipper_contact" => "03242646886",
-            "shipper_address" => "Plot # 5 blueEx Awami Markaz Shahrah-E-Faisal Karachi",
-            "shipper_city" => "LHE",
-            "customer_name" => "FAHAD",
-            "customer_email" => "mubeen.dewani@blue-ex.com",
-            "customer_contact" => "03242646886",
-            "customer_address" => "Plot # 5 blueEx Awami Markaz Shahrah-E-Faisal Karachi",
-            "customer_city" => "KHI",
-            "customer_country" => "PK",
-            "customer_comment" => "demo",
-            "shipping_charges" => "150",
-            "payment_type" => "COD",
-            "service_code" => "BE",
-            "total_order_amount" => "4150.00",
-            "total_order_weight" => "1",
-            "order_refernce_code" => "bluedemo1",
-            "fragile" => "N",
-            "parcel_type" => "P",
-            "insurance_require" => "N",
-            "insurance_value" => "0",
-            "testbit" => "Y",
-            "cn_generate" => "Y",
-            "multi_pickup" => "Y",
-            "products_detail" => array(
-                array(
-                    "product_code" => "1005",
-                    "product_name" => "Polo T shirt",
-                    "product_price" => "1000",
-                    "product_weight" => "0.5",
-                    "product_quantity" => "2",
-                    "product_variations" => "small-black",
-                    "sku_code" => "12assk11aa"
+            "amount" => 500,
+            "order_id" => "", // Optional - Will generate unique ID if not provided
+            "currency_code" =>  "PKR", // Optional - Will use one set during initializing
+            "description" => "Test Order",
+            "return_url" =>  "https://techandaz.com/success", // Optional - Will use one set during initializing
+            "transaction_type" => "PURCHASE", // Optional - will use one set during initializing
+            // Use this to provide more data into the checkout intiation. Details can be found on official documentation
+            "data" => array(
+                "billing" => array(
+                    "address" => array(
+                        "city" => 'Lahore',
+                        "company" => 'Tech Andaz',
+                        "country" => 'PAK',
+                        "postcodeZip" => '54000',
+                        "stateProvince" => 'Punjab',
+                        "street" => '119/2 M Quaid-e-Azam Industrial Estate',
+                        "street2" => 'Kot Lakhpat, Township',
+                    )
+                ),
+                "customer" => array(
+                    "account" => array(
+                        "id" => '12345',
+                    ),
+                    "email" => 'test@test.com',
+                    "firstName" => 'Tech',
+                    "lastName" => 'Andaz',
+                    "mobilePhone" => '+924235113700',
+                    "phone" => '+924235113700',
+                    "taxRegistrationId" => '123456',
+                ),
+                "interaction" => array(
+                    "cancelUrl" => "https://techandaz.com/cancel",
+                    "merchant" => array(
+                        "logo" => "https://techandaz.com/images/logo.png",
+                        "name" => "Tech Andaz",
+                        "url" => "https://techandaz.com"
+                    ),
+                    "timeout" => 1800
+                ),
+                "order" => array(
+                    "notificationUrl" => "https://techandaz.com/webhook",
+                    "item" => array(
+                        array(
+                            "name" => "Test Product",
+                            "quantity" => 1,
+                            "unitPrice" => 100,
+                        ),
+                        array(
+                            "name" => "Test Product2",
+                            "quantity" => 4,
+                            "unitPrice" => 100,
+                        ),
+                    )
                 )
-            )
+            ), // Use this to provide more data into the checkout intiation. Details can be found on official documentation
         );
-        $response = $BlueExAPI->createShipment($data);
+        $response_type = "data"; // redirect / data - Defaults to redirect, Redirect will automatically redirect user to payment page, data will return array with all values
+        $response = $AlfalahIPGAPI->createCheckoutLink($data, $response_type);
         return $response;
-    } catch (TechAndaz\BlueEx\BlueExException $e) {
+    } catch (TechAndaz\AlfalahIPG\AlfalahIPGException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
 
-//Cancel Shipment
-function cancelShipment($BlueExAPI){
+//Dynamic Redirect
+function dynamicRedirect($AlfalahIPGAPI){
     try {
-        $consignment_no = "5027729332";
-        $response = $BlueExAPI->cancelShipment($consignment_no);
-        return $response;
-    } catch (TechAndaz\BlueEx\BlueExException $e) {
-        echo "Error: " . $e->getMessage() . "\n";
-    }
-}
-
-//Reverse Pickup
-function reversePickup($BlueExAPI){
-    try {
-        $consignment_no = "5027729337";
-        $response = $BlueExAPI->reversePickup($consignment_no);
-        return $response;
-    } catch (TechAndaz\BlueEx\BlueExException $e) {
-        echo "Error: " . $e->getMessage() . "\n";
-    }
-}
-
-//Create Loadsheet
-function createLoadsheet($BlueExAPI){
-    try {
-        $consignment_no = "5027729332, 5027729337";
-        $response = $BlueExAPI->createLoadsheet($consignment_no);
-        return $response;
-    } catch (TechAndaz\BlueEx\BlueExException $e) {
+        $data = array(
+            "amount" => 500,
+            "description" => "Test Order",
+        );
+        $response_type = "data"; // redirect / data - Defaults to redirect, Redirect will automatically redirect user to payment page, data will return array with all values
+        $response = $AlfalahIPGAPI->createCheckoutLink($data, $response_type);
+        $access_token = $response['access_token'];
+        $success_indicator = $response['success_indicator'];
+        $AlfalahIPGAPI->dynamicRedirect($access_token);
+        return;
+    } catch (TechAndaz\AlfalahIPG\AlfalahIPGException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
 
 //Get Form Fields
-function getFormFields($BlueExAPI){
+function getFormFields($AlfalahIPGAPI){
     try { 
         $config = array(
             "response" => "form",
             "label_class" => "form-label",
             "input_class" => "form-control",
             "wrappers" => array(
-                "shipper_name" => array(
+                "CUSTOMER_EMAIL_ADDRESS" => array(
                     "input_wrapper_start" => '<div class="mb-3 col-md-6">',
                     "input_wrapper_end" => "</div>"
                 ),
-                "shipper_email" => array(
+                "CUSTOMER_MOBILE_NO" => array(
                     "input_wrapper_start" => '<div class="mb-3 col-md-6">',
                     "input_wrapper_end" => "</div>"
                 ),
-                "shipper_contact" => array(
+                "TXNAMT" => array(
                     "input_wrapper_start" => '<div class="mb-3 col-md-6">',
                     "input_wrapper_end" => "</div>"
                 ),
-                "shipper_address" => array(
+                "BASKET_ID" => array(
                     "input_wrapper_start" => '<div class="mb-3 col-md-6">',
                     "input_wrapper_end" => "</div>"
                 ),
-                "shipper_city" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "customer_name" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "customer_contact" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "customer_address" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "customer_city" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "customer_country" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "payment_type" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "service_code" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "total_order_amount" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "total_order_weight" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "order_refernce_code" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "fragile" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "parcel_type" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "insurance_require" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "cn_generate" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "products_detail_row" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-12"><div class = "row">',
-                    "input_wrapper_end" => "</div></div>"
-                ),
-                "product_name" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "product_price" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "product_quantity" => array(
-                    "input_wrapper_start" => '<div class="mb-3 col-md-6">',
-                    "input_wrapper_end" => "</div>"
-                ),
-                "product_weight" => array(
+                "ORDER_DATE" => array(
                     "input_wrapper_start" => '<div class="mb-3 col-md-6">',
                     "input_wrapper_end" => "</div>"
                 ),
@@ -284,24 +138,13 @@ function getFormFields($BlueExAPI){
             "optional_selective" => array(
             ),
         );
-        $response = $BlueExAPI->getFormFields($config);
+        $response = $AlfalahIPGAPI->getFormFields($config);
         return $response;
-    } catch (TechAndaz\BlueEx\BlueExException $e) {
+    } catch (TechAndaz\AlfalahIPG\AlfalahIPGException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-
-// echo json_encode(getAllPickupLocations($BlueExAPI));
-// echo json_encode(getPickupLocation($BlueExAPI));
-// echo json_encode(getShipmentStatus($BlueExAPI));
-// echo json_encode(getShipmentSettlement($BlueExAPI));
-// echo json_encode(getShipmentInfo($BlueExAPI));
-// echo json_encode(getShipmentTracking($BlueExAPI));
-// echo json_encode(getCities($BlueExAPI));
-// echo json_encode(getServiceType($BlueExAPI));
-// echo json_encode(createShipment($BlueExAPI));
-// echo json_encode(cancelShipment($BlueExAPI));
-// echo json_encode(reversePickup($BlueExAPI));
-// echo json_encode(createLoadsheet($BlueExAPI));
-// echo (getFormFields($BlueExAPI));
+// echo json_encode(createCheckoutLink($AlfalahIPGAPI));
+echo (dynamicRedirect($AlfalahIPGAPI));
+// echo (getFormFields($AlfalahIPGAPI));
 ?>

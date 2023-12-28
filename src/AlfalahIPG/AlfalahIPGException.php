@@ -1,8 +1,8 @@
 <?php
 
-namespace TechAndaz\PayFast;
+namespace TechAndaz\AlfalahIPG;
 
-class PayFastException extends \Exception
+class AlfalahIPGException extends \Exception
 {
     public function __construct($message = "", $code = 0, \Throwable $previous = null)
     {
