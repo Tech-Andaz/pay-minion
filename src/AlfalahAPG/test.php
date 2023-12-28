@@ -7,17 +7,17 @@ use TechAndaz\AlfalahAPG\AlfalahAPGAPI;
 
 $AlfalahAPGClient = new AlfalahAPGClient(array(
     "environment" => "production", // Optional - Defaults to production. Options are: sandbox / production
-    "key1" => "FYWym3Ucp9UWn4k8",
-    "key2" => "6281369701080712",
-    "channel_id" => "1001",
-    "merchant_id" => "17759",
-    "store_id" => "023231",
+    "key1" => "KEY1",
+    "key2" => "KEY2",
+    "channel_id" => "CHANNELID",
+    "merchant_id" => "MERCHANTID",
+    "store_id" => "STOREID",
     "redirection_request" => "0", // Optional - Defaults to 0
-    "merchant_hash" => "OUU362MB1uoCmYtYcqYYYsonir3Y1cLEFdW01UoXgtIMuhhg16sV85XZ7jH7NdFyN+iQC+zvvUpOVDEZZVusJ3iRl8GQuI7twXuiBdVS7jQ=",
-    "merchant_username" => "yxibes",
-    "merchant_password" => "dyla/gO9xSNvFzk4yqF7CA==",
+    "merchant_hash" => "MERCHANTHASH",
+    "merchant_username" => "USERNAME",
+    "merchant_password" => "PASSWORD",
     "transaction_type" => "3", // Optional - Defaults to 3
-    "cipher" => "aes-128-cbc", // Optional - Defaults to aes-128-cbc
+    "cipher" => "CIPHER", // Optional - Defaults to aes-128-cbc
     "return_url" => "https://techandaz.com",
     "currency" => "PKR", // Optional - Defaults to PKR
 ));
