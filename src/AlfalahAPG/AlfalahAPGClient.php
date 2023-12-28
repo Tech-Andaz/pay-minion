@@ -1,57 +1,88 @@
 <?php
 
-namespace TechAndaz\AlfalahIPG;
-class AlfalahIPGClient
+namespace TechAndaz\AlfalahAPG;
+class AlfalahAPGClient
 {
-    public $api_version = "77";
     public $environment;
     public $api_url;
-    public $checkout_url;
-    public $merchant_id;
-    public $operator_id;
-    public $merchant_name;
-    public $password;
-    public $api_key;
-    public $success_url;
+    public $form_url;
+    public $key1;
+    public $key2;
+    private $channel_id;
+    private $merchant_id;
+    private $store_id;
+    private $redirection_request;
+    private $merchant_hash;
+    private $merchant_username;
+    private $merchant_password;
     public $transaction_type;
+    public $cipher;
+    public $return_url;
     public $currency;
-    private $api_auth;
-
+    public $hash_request;
+    public $form_request;
 
     /**
-    * AlfalahIPGClient constructor.
+    * AlfalahAPGClient constructor.
     * @param array $config.
     */
     public function __construct($config)
     {
-        //LIVE = https://bankalfalah.gateway.mastercard.com/
-        //TEST = https://test-bankalfalah.gateway.mastercard.com/
+        //LIVE = https://payments.bankalfalah.com/HS/HS/HS
+        //TEST = https://sandbox.bankalfalah.com/HS/HS/HS
+
+        //FORM LIVE = https://payments.bankalfalah.com/SSO/SSO/SSO
+        //FORM TEST = https://sandbox.bankalfalah.com/SSO/SSO/SSO
         $this->environment = (isset($config['environment']) && in_array($config['environment'], ['sandbox','production'])) ? $config['environment'] : "production";
-        $this->api_url = ($this->environment == 'production') ? "https://bankalfalah.gateway.mastercard.com/" : "https://test-bankalfalah.gateway.mastercard.com/";
-        $this->checkout_url = $this->api_url . "static/checkout/checkout.min.js";
-        $this->merchant_id = (isset($config['merchant_id']) && $config['merchant_id'] != "") ? $config['merchant_id'] : throw new AlfalahIPGException("Merchant ID is missing");
-        $this->operator_id = (isset($config['operator_id']) && $config['operator_id'] != "") ? $config['operator_id'] : "";
-        $this->merchant_name = (isset($config['merchant_name']) && $config['merchant_name'] != "") ? $config['merchant_name'] : "Pay Minion";
-        $this->password = (isset($config['password']) && $config['password'] != "") ? $config['password'] : throw new AlfalahIPGException("Password is missing");
-        $this->api_key = (isset($config['api_key']) && $config['api_key'] != "") ? $config['api_key'] : "";
-        $this->success_url = (isset($config['return_url']) && $config['return_url'] != "") ? $config['return_url'] : "";
-        $this->transaction_type = (isset($config['transaction_type']) && in_array($config['transaction_type'], ['AUTHORIZE','PURCHASE', 'VERIFY', 'NONE'])) ? $config['transaction_type'] : "PURCHASE";
+        $this->api_url = ($this->environment == 'production') ? "https://payments.bankalfalah.com/HS/HS/HS" : "https://sandbox.bankalfalah.com/HS/HS/HS";
+        $this->form_url = ($this->environment == 'production') ? "https://payments.bankalfalah.com/SSO/SSO/SSO" : "https://sandbox.bankalfalah.com/SSO/SSO/SSO";
+        $this->key1 = (isset($config['key1']) && $config['key1'] != "") ? $config['key1'] : throw new AlfalahAPGException("Key1 is missing");
+        $this->key2 = (isset($config['key2']) && $config['key2'] != "") ? $config['key2'] : throw new AlfalahAPGException("Key2 is missing");
+        $this->channel_id = (isset($config['channel_id']) && $config['channel_id'] != "") ? $config['channel_id'] : throw new AlfalahAPGException("Channel ID is missing");
+        $this->merchant_id = (isset($config['merchant_id']) && $config['merchant_id'] != "") ? $config['merchant_id'] : throw new AlfalahAPGException("Merchant ID is missing");
+        $this->store_id = (isset($config['store_id']) && $config['store_id'] != "") ? $config['store_id'] : throw new AlfalahAPGException("Store ID is missing");
+        $this->redirection_request = (isset($config['redirection_request']) && $config['redirection_request'] != "") ? $config['redirection_request'] : "0";
+        $this->merchant_hash = (isset($config['merchant_hash']) && $config['merchant_hash'] != "") ? $config['merchant_hash'] : throw new AlfalahAPGException("Merchant Hash is missing");
+        $this->merchant_username = (isset($config['merchant_username']) && $config['merchant_username'] != "") ? $config['merchant_username'] : throw new AlfalahAPGException("Merchant Username is missing");
+        $this->merchant_password = (isset($config['merchant_password']) && $config['merchant_password'] != "") ? $config['merchant_password'] : throw new AlfalahAPGException("Merchant Password is missing");
+        $this->transaction_type = (isset($config['transaction_type']) && $config['transaction_type'] != "") ? $config['transaction_type'] : "3";
+        $this->cipher = (isset($config['cipher']) && $config['cipher'] != "") ? $config['cipher'] : "aes-128-cbc";
+        $this->return_url = (isset($config['return_url']) && $config['return_url'] != "") ? $config['return_url'] : throw new AlfalahAPGException("Return URL is missing");
         $this->currency = (isset($config['currency']) && $config['currency'] != "") ? $config['currency'] : "PKR";
-        $this->api_auth = base64_encode("merchant.".$this->merchant_id.":".$this->password);
+        $this->hash_request = (array(
+            "HS_ChannelId" => $this->channel_id,
+            "HS_IsRedirectionRequest" => $this->redirection_request,
+            "HS_MerchantId" => $this->merchant_id,
+            "HS_StoreId" => $this->store_id,
+            "HS_ReturnURL" => $this->return_url,
+            "HS_MerchantHash" => $this->merchant_hash,
+            "HS_MerchantUsername" => $this->merchant_username,
+            "HS_MerchantPassword" => $this->merchant_password,
+        ));      
+        $this->form_request = (array(
+            "ChannelId" => $this->channel_id,
+            "IsRedirectionRequest" => $this->redirection_request,
+            "MerchantId" => $this->merchant_id,
+            "StoreId" => $this->store_id,
+            "ReturnURL" => $this->return_url,
+            "MerchantHash" => $this->merchant_hash,
+            "MerchantUsername" => $this->merchant_username,
+            "MerchantPassword" => $this->merchant_password,
+        ));        
     }
 
     /**
-    * Make a request to the AlfalahIPG API.
+    * Make a request to the AlfalahAPG API.
     * @param string $endpoint   API endpoint.
     * @param string $method     HTTP method (GET, POST, PUT, DELETE).
     * @param array $data        Data to send with the request (for POST, PUT, DELETE).
     * @return array            Decoded response data.
-    * @throws AlfalahIPGException    If the request or response encounters an error.
+    * @throws AlfalahAPGException    If the request or response encounters an error.
     */
     public function makeRequest($endpoint, $method = 'GET', $data = [], $queryParams = [])
     {
         $url = rtrim($this->api_url, "/") . '/' . ltrim($endpoint, '/');
-        $headers = ["Authorization: Basic " . $this->api_auth, "Content-Type: application/json"];
+        $headers = ["Content-Type: application/json"];
         $response = $this->sendRequest($url, $method, $headers, $data, $queryParams);
         $responseData = json_decode($response, true);
         return $responseData;
@@ -66,7 +97,7 @@ class AlfalahIPGClient
 
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'CURL/PHP Pay Minion');
+        // curl_setopt($ch, CURLOPT_USERAGENT, 'CURL/PHP Pay Minion');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         if ($method === 'POST' || $method === 'PUT' || $method === 'DELETE') {
@@ -77,7 +108,7 @@ class AlfalahIPGClient
         }
         $response = curl_exec($ch);
         if (curl_errno($ch)) {
-            throw new AlfalahIPGException('cURL request failed: ' . curl_error($ch));
+            throw new AlfalahAPGException('cURL request failed: ' . curl_error($ch));
         }
         curl_close($ch);
         return $response;

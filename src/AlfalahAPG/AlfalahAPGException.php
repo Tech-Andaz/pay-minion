@@ -1,8 +1,8 @@
 <?php
 
-namespace TechAndaz\AlfalahIPG;
+namespace TechAndaz\AlfalahAPG;
 
-class AlfalahIPGException extends \Exception
+class AlfalahAPGException extends \Exception
 {
     public function __construct($message = "", $code = 0, \Throwable $previous = null)
     {

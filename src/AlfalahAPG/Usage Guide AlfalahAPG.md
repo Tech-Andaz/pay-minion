@@ -1,7 +1,7 @@
 
-## Usage Guide - Alfalah IPG
-## Table of Contents - Alfalah IPG Usage Guide
-- [Initialize Alfalah IPG Client](#initialize)
+## Usage Guide - Alfalah APG
+## Table of Contents - Alfalah APG Usage Guide
+- [Initialize Alfalah APG Client](#initialize)
 - [Create Checkout Link](#create-checkout-link)
 - [Dynamic Redirect](#dynamic-redirect)
 ## Initialize
@@ -13,92 +13,44 @@ Certain keys can be set as defaults during initialize stage. You can set them he
 
 require 'vendor/autoload.php';
 
-use TechAndaz\AlfalahIPG\AlfalahIPGClient;
-use TechAndaz\AlfalahIPG\AlfalahIPGAPI;
+use TechAndaz\AlfalahAPG\AlfalahAPGClient;
+use TechAndaz\AlfalahAPG\AlfalahAPGAPI;
 
-$AlfalahIPGClient = new AlfalahIPGClient(array(
-    "environment" =>"production", // Optional - Defaults to production
-    "merchant_id" => "YOURMERCHANTID",
-    "merchant_name" =>  "Pay Minion",
-    "password" =>  "YOURMERCHANTPASSWORD",
-    "operator_id" =>  "YOUROPERATORID",  // Optional
-    "api_key" =>  "YOURAPIKEY", // Optional 
-    "return_url" =>  "https://techandaz.com/success", // Required/Optional - Must be provided either during initialize or during checkout link creation.
-    "transaction_type" =>"PURCHASE", // Optional - Defaults to PURCHASE. Options are: PURCHASE / AUTHORIZE / VERIFY / NONE
-    "currency_code" =>  "PKR",
+$AlfalahAPGClient = new AlfalahAPGClient(array(
+    "environment" => "production", // Optional - Defaults to production. Options are: sandbox / production
+    "key1" => "KEY1",
+    "key2" => "KEY2",
+    "channel_id" => "CHANNELID",
+    "merchant_id" => "MERCHANTID",
+    "store_id" => "STOREID",
+    "redirection_request" => "0", // Optional - Defaults to 0
+    "merchant_hash" => "MERCHANTHASH",
+    "merchant_username" => "USERNAME",
+    "merchant_password" => "PASSWORD",
+    "transaction_type" => "3", // Optional - Defaults to 3
+    "cipher" => "CIPHER", // Optional - Defaults to aes-128-cbc
+    "return_url" => "https://techandaz.com",
+    "currency" => "PKR", // Optional - Defaults to PKR
 ));
 
-$AlfalahIPGAPI = new AlfalahIPGAPI($AlfalahIPGClient);
+$AlfalahAPGAPI = new AlfalahAPGAPI($AlfalahAPGClient);
 ?>
 ```
 ## Create Checkout Link
 
-You can add any fields available in the documentation in the "data" key. This is optional and only useful/required when customizing the appearance or functionality of the checkout. Refer to the documentation for full list of parameters.
 
 ```php
 <?php
 try {
     $data = array(
         "amount" => 500,
+        "currency" =>  "PKR", // Optional - Will use one set during initializing
         "order_id" => "", // Optional - Will generate unique ID if not provided
-        "currency_code" =>  "PKR", // Optional - Will use one set during initializing
-        "description" => "Test Order",
-        "return_url" =>  "https://techandaz.com/success", // Optional - Will use one set during initializing
-        "transaction_type" => "PURCHASE", // Optional - will use one set during initializing
-        // Use this to provide more data into the checkout intiation. Details can be found on official documentation
-        "data" => array(
-            "billing" => array(
-                "address" => array(
-                    "city" => 'Lahore',
-                    "company" => 'Tech Andaz',
-                    "country" => 'PAK',
-                    "postcodeZip" => '54000',
-                    "stateProvince" => 'Punjab',
-                    "street" => '119/2 M Quaid-e-Azam Industrial Estate',
-                    "street2" => 'Kot Lakhpat, Township',
-                )
-            ),
-            "customer" => array(
-                "account" => array(
-                    "id" => '12345',
-                ),
-                "email" => 'test@test.com',
-                "firstName" => 'Tech',
-                "lastName" => 'Andaz',
-                "mobilePhone" => '+924235113700',
-                "phone" => '+924235113700',
-                "taxRegistrationId" => '123456',
-            ),
-            "interaction" => array(
-                "cancelUrl" => "https://techandaz.com/cancel",
-                "merchant" => array(
-                    "logo" => "https://techandaz.com/images/logo.png",
-                    "name" => "Tech Andaz",
-                    "url" => "https://techandaz.com"
-                ),
-                "timeout" => 1800
-            ),
-            "order" => array(
-                "notificationUrl" => "https://techandaz.com/webhook",
-                "item" => array(
-                    array(
-                        "name" => "Test Product",
-                        "quantity" => 1,
-                        "unitPrice" => 100,
-                    ),
-                    array(
-                        "name" => "Test Product2",
-                        "quantity" => 4,
-                        "unitPrice" => 100,
-                    ),
-                )
-            )
-        ), // Use this to provide more data into the checkout intiation. Details can be found on official documentation
     );
-    $response_type = "data"; // redirect / data - Defaults to redirect, Redirect will automatically redirect user to payment page, data will return array with all values
-    $response = $AlfalahIPGAPI->createCheckoutLink($data, $response_type);
+    $response_type = "redirect"; // redirect / form / data - Defaults to redirect, Redirect will automatically redirect user to payment page, form will return html form with fields and values, data will return array with all values
+    $response = $AlfalahAPGAPI->createCheckoutLink($data, $response_type);
     return $response;
-} catch (TechAndaz\AlfalahIPG\AlfalahIPGException $e) {
+} catch (TechAndaz\AlfalahAPG\AlfalahAPGException $e) {
     echo "Error: " . $e->getMessage() . "\n";
 }
 ?>
@@ -114,14 +66,13 @@ Dynamic Redirect allows you redirect user to the payment page without having to 
 try {
     $data = array(
         "amount" => 500,
-        "description" => "Test Order",
+        "currency" =>  "PKR", // Optional - Will use one set during initializing
+        "order_id" => "", // Optional - Will generate unique ID if not provided
     );
     $response_type = "data"; // redirect / data - Defaults to redirect, Redirect will automatically redirect user to payment page, data will return array with all values
-    $response = $AlfalahIPGAPI->createCheckoutLink($data, $response_type);
-    $access_token = $response['access_token'];
-    $success_indicator = $response['success_indicator'];
+    $response = $AlfalahAPGAPI->createCheckoutLink($data, $response_type);
     return;
-} catch (TechAndaz\AlfalahIPG\AlfalahIPGException $e) {
+} catch (TechAndaz\AlfalahAPG\AlfalahAPGException $e) {
     echo "Error: " . $e->getMessage() . "\n";
 }
 ?>
@@ -133,9 +84,9 @@ try {
 ```php
 <?php
 try {
-    $AlfalahIPGAPI->dynamicRedirect($access_token);
+    $AlfalahAPGAPI->dynamicRedirect($response);
     return;
-} catch (TechAndaz\AlfalahIPG\AlfalahIPGException $e) {
+} catch (TechAndaz\AlfalahAPG\AlfalahAPGException $e) {
     echo "Error: " . $e->getMessage() . "\n";
 }
 ?>
@@ -149,67 +100,14 @@ try {
 try {
     $data = array(
         "amount" => 500,
+        "currency" =>  "PKR", // Optional - Will use one set during initializing
         "order_id" => "", // Optional - Will generate unique ID if not provided
-        "currency_code" =>  "PKR", // Optional - Will use one set during initializing
-        "description" => "Test Order",
-        "return_url" =>  "https://techandaz.com/success", // Optional - Will use one set during initializing
-        "transaction_type" => "PURCHASE", // Optional - will use one set during initializing
-        // Use this to provide more data into the checkout intiation. Details can be found on official documentation
-        "data" => array(
-            "billing" => array(
-                "address" => array(
-                    "city" => 'Lahore',
-                    "company" => 'Tech Andaz',
-                    "country" => 'PAK',
-                    "postcodeZip" => '54000',
-                    "stateProvince" => 'Punjab',
-                    "street" => '119/2 M Quaid-e-Azam Industrial Estate',
-                    "street2" => 'Kot Lakhpat, Township',
-                )
-            ),
-            "customer" => array(
-                "account" => array(
-                    "id" => '12345',
-                ),
-                "email" => 'test@test.com',
-                "firstName" => 'Tech',
-                "lastName" => 'Andaz',
-                "mobilePhone" => '+924235113700',
-                "phone" => '+924235113700',
-                "taxRegistrationId" => '123456',
-            ),
-            "interaction" => array(
-                "cancelUrl" => "https://techandaz.com/cancel",
-                "merchant" => array(
-                    "logo" => "https://techandaz.com/images/logo.png",
-                    "name" => "Tech Andaz",
-                    "url" => "https://techandaz.com"
-                ),
-                "timeout" => 1800
-            ),
-            "order" => array(
-                "notificationUrl" => "https://techandaz.com/webhook",
-                "item" => array(
-                    array(
-                        "name" => "Test Product",
-                        "quantity" => 1,
-                        "unitPrice" => 100,
-                    ),
-                    array(
-                        "name" => "Test Product2",
-                        "quantity" => 4,
-                        "unitPrice" => 100,
-                    ),
-                )
-            )
-        ), // Use this to provide more data into the checkout intiation. Details can be found on official documentation
     );
     $response_type = "data"; // redirect / data - Defaults to redirect, Redirect will automatically redirect user to payment page, data will return array with all values
-    $response = $AlfalahIPGAPI->createCheckoutLink($data, $response_type);
-    $access_token = $response['access_token'];
-    $success_indicator = $response['success_indicator'];
-    $AlfalahIPGAPI->dynamicRedirect($access_token);
-} catch (TechAndaz\AlfalahIPG\AlfalahIPGException $e) {
+    $response = $AlfalahAPGAPI->createCheckoutLink($data, $response_type);
+    $AlfalahAPGAPI->dynamicRedirect($response);
+    return;
+} catch (TechAndaz\AlfalahAPG\AlfalahAPGException $e) {
     echo "Error: " . $e->getMessage() . "\n";
 }
 ?>
