@@ -18,7 +18,7 @@ composer require tech-andaz/pay-minion
 
 ## Integrations
 
-| Provider | Usage Guide | Type | Version | API Doc |
+| Provider | Usage Guide | Version | Type | API Doc |
 | -------- | ------- | ------- | ------- | ------- |
 |Safe Pay|[Safe Pay Usage Guide](src/SafePay/Usage%20Guide%20SafePay.md)| v1.0.0 | Hosted |[Safe Pay API Docs](https://github.com/getsafepay/safepay-php)|
 |UBL|[UBL Usage Guide](src/UBL/Usage%20Guide%20UBL.md)| v1.6 | Hosted| [UBL API Docs](src/UBL/Api%20Docs%20UBL.pdf)|
