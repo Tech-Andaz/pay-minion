@@ -45,7 +45,7 @@ class AlfalahIPGAPI
             "order" => array(
                 "id" => $order['order_id'],
                 "amount" => $order['amount'],
-                "currency" => (isset($order['currency_code']) && $order['currency_code'] != "") ? $order['currency_code'] : $this->AlfalahIPGClient->currency_code,
+                "currency" => (isset($order['currency_code']) && $order['currency_code'] != "") ? $order['currency_code'] : $this->AlfalahIPGClient->currency,
                 "description" => $order['description'],
             ),
         );
@@ -59,6 +59,8 @@ class AlfalahIPGAPI
         if(!isset($payload['result']) || (isset($payload['result']) && $payload['result'] != 'SUCCESS')){
             throw new AlfalahIPGException("There was an error generating access token. Response: " . json_encode($payload));
         }
+        print_r($payload);
+        exit;
         $successIndicator = $payload['successIndicator'];
         $access_token = $payload['session']['id'];
         if($response_type == "data"){

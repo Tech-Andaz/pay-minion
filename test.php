@@ -6,12 +6,12 @@ use TechAndaz\AlfalahIPG\AlfalahIPGClient;
 use TechAndaz\AlfalahIPG\AlfalahIPGAPI;
 
 $AlfalahIPGClient = new AlfalahIPGClient(array(
-    "environment" =>"production", // Optional - Defaults to production
-    "merchant_id" => "YOURMERCHANTID",
+    "environment" =>"sandbox", // Optional - Defaults to production. Options are: sandbox / production
+    "merchant_id" => "TESTBAFL_TEST58",
     "merchant_name" =>  "Pay Minion",
-    "password" =>  "YOURMERCHANTPASSWORD",
-    "operator_id" =>  "YOUROPERATORID",  // Optional
-    "api_key" =>  "YOURAPIKEY", // Optional 
+    "password" =>  "3b347fee72a340f88601a9423bb2b898",
+    "operator_id" =>  "TESTALFATAH",  // Optional
+    "api_key" =>  "Bafl&2143", // Optional 
     "return_url" =>  "https://techandaz.com/success", // Required/Optional - Must be provided either during initialize or during checkout link creation.
     "transaction_type" =>"PURCHASE", // Optional - Defaults to PURCHASE. Options are: PURCHASE / AUTHORIZE / VERIFY / NONE
     "currency_code" =>  "PKR",
