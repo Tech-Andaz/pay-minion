@@ -92,11 +92,7 @@ function dynamicRedirect($AlfalahIPGAPI){
     try {
         $data = array(
             "amount" => 500,
-            "order_id" => "", // Optional - Will generate unique ID if not provided
-            "currency_code" =>  "PKR", // Optional - Will use one set during initializing
             "description" => "Test Order",
-            "return_url" =>  "https://techandaz.com/success", // Optional - Will use one set during initializing
-            "transaction_type" => "PURCHASE", // Optional - will use one set during initializing
         );
         $response_type = "data"; // redirect / data - Defaults to redirect, Redirect will automatically redirect user to payment page, data will return array with all values
         $response = $AlfalahIPGAPI->createCheckoutLink($data, $response_type);
