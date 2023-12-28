@@ -59,8 +59,6 @@ class AlfalahIPGAPI
         if(!isset($payload['result']) || (isset($payload['result']) && $payload['result'] != 'SUCCESS')){
             throw new AlfalahIPGException("There was an error generating access token. Response: " . json_encode($payload));
         }
-        print_r($payload);
-        exit;
         $successIndicator = $payload['successIndicator'];
         $access_token = $payload['session']['id'];
         if($response_type == "data"){
