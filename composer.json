@@ -1,6 +1,6 @@
 {
-    "name": "tech-andaz/ship-drill",
-    "description": "Tech Andaz's library for managing multiple shipping/logistic companies",
+    "name": "tech-andaz/pay-minion",
+    "description": "Tech Andaz's library for managing multiple payment gateways companies",
     "type": "library",
     "authors": [
         {

@@ -2,30 +2,21 @@
 
 require 'vendor/autoload.php';
 
-use TechAndaz\AlfalahAPG\AlfalahAPGClient;
-use TechAndaz\AlfalahAPG\AlfalahAPGAPI;
+use TechAndaz\CallCourier\CallCourierClient;
+use TechAndaz\CallCourier\CallCourierAPI;
 
-$AlfalahAPGClient = new AlfalahAPGClient(array(
-    "environment" => "production", // Optional - Defaults to production. Options are: sandbox / production
-    "key1" => "FYWym3Ucp9UWn4k8",
-    "key2" => "6281369701080712",
-    "channel_id" => "1001",
-    "merchant_id" => "17759",
-    "store_id" => "023231",
-    "redirection_request" => "0", // Optional - Defaults to 0
-    "merchant_hash" => "OUU362MB1uoCmYtYcqYYYsonir3Y1cLEFdW01UoXgtIMuhhg16sV85XZ7jH7NdFyN+iQC+zvvUpOVDEZZVusJ3iRl8GQuI7twXuiBdVS7jQ=",
-    "merchant_username" => "yxibes",
-    "merchant_password" => "dyla/gO9xSNvFzk4yqF7CA==",
-    "transaction_type" => "3", // Optional - Defaults to 3
-    "cipher" => "aes-128-cbc", // Optional - Defaults to aes-128-cbc
+$CallCourierClient = new CallCourierClient(array(
+    "environment" => "production", // Optional - Defaults to production. Options are: sandbox / production. Call courier doesnt have a sandbox so in sandbox mode test credentials will be applied automatically unless specified otherwise.
+    "loginId" => " test-0001", // Optional if sandbox
+    "password" => "test0001new", // Optional if sandbox
     "return_url" => "https://techandaz.com",
     "currency" => "PKR", // Optional - Defaults to PKR
 ));
 
-$AlfalahAPGAPI = new AlfalahAPGAPI($AlfalahAPGClient);
+$CallCourierAPI = new CallCourierAPI($CallCourierClient);
 
 //Create Checkout Link
-function createCheckoutLink($AlfalahAPGAPI){
+function createCheckoutLink($CallCourierAPI){
     try {
         $data = array(
             "amount" => 500,
@@ -33,15 +24,15 @@ function createCheckoutLink($AlfalahAPGAPI){
             "order_id" => "", // Optional - Will generate unique ID if not provided
         );
         $response_type = "redirect"; // redirect / form / data - Defaults to redirect, Redirect will automatically redirect user to payment page, form will return html form with fields and values, data will return array with all values
-        $response = $AlfalahAPGAPI->createCheckoutLink($data, $response_type);
+        $response = $CallCourierAPI->createCheckoutLink($data, $response_type);
         return $response;
-    } catch (TechAndaz\AlfalahAPG\AlfalahAPGException $e) {
+    } catch (TechAndaz\CallCourier\CallCourierException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
 
 //Dynamic Redirect
-function dynamicRedirect($AlfalahAPGAPI){
+function dynamicRedirect($CallCourierAPI){
     try {
         $data = array(
             "amount" => 500,
@@ -49,13 +40,13 @@ function dynamicRedirect($AlfalahAPGAPI){
             "order_id" => "", // Optional - Will generate unique ID if not provided
         );
         $response_type = "data"; // redirect / data - Defaults to redirect, Redirect will automatically redirect user to payment page, data will return array with all values
-        $response = $AlfalahAPGAPI->createCheckoutLink($data, $response_type);
-        $AlfalahAPGAPI->dynamicRedirect($response);
+        $response = $CallCourierAPI->createCheckoutLink($data, $response_type);
+        $CallCourierAPI->dynamicRedirect($response);
         return;
-    } catch (TechAndaz\AlfalahAPG\AlfalahAPGException $e) {
+    } catch (TechAndaz\CallCourier\CallCourierException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-// echo (createCheckoutLink($AlfalahAPGAPI));
-echo (dynamicRedirect($AlfalahAPGAPI));
+// echo (createCheckoutLink($CallCourierAPI));
+echo (dynamicRedirect($CallCourierAPI));
 ?>
