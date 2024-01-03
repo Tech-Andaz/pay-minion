@@ -21,7 +21,7 @@ composer require tech-andaz/pay-minion
 | Provider | Usage Guide | Version | Type | API Doc |
 | -------- | ------- | ------- | ------- | ------- |
 |Safe Pay|[Safe Pay Usage Guide](src/SafePay/Usage%20Guide%20SafePay.md)| v1.0.0 | Hosted |[Safe Pay API Docs](https://github.com/getsafepay/safepay-php)|
-|Safe Pay Embedded|[Safe Pay Embedded Usage Guide](src/SafePay/Usage%20Guide%20SafePayEmbedded.md)| v2.0.0 | Embedded |[Safe Pay Embedded API Docs](https://github.com/getsafepay/sfpy-php)|
+|Safe Pay Embedded|[Safe Pay Embedded Usage Guide](src/SafePayEmbedded/Usage%20Guide%20SafePayEmbedded.md)| v2.0.0 | Embedded |[Safe Pay Embedded API Docs](https://github.com/getsafepay/sfpy-php)|
 |UBL|[UBL Usage Guide](src/UBL/Usage%20Guide%20UBL.md)| v1.6 | Hosted| [UBL API Docs](src/UBL/Api%20Docs%20UBL.pdf)|
 |PayFast|[PayFast Usage Guide](src/PayFast/Usage%20Guide%20PayFast.md)| - | Hosted| -|
 |Alfalah IPG|[Alfalah IPG Usage Guide](src/AlfalahIPG/Usage%20Guide%20AlfalahIPG.md)|  v77 | Hosted|[Alfalah IPG API Docs](https://test-bankalfalah.gateway.mastercard.com/api/documentation/integrationGuidelines/index.html)|
