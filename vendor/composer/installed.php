@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
-        'name' => 'tech-andaz/ship-drill',
+        'name' => 'tech-andaz/pay-minion',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'db205a52e99582bee15b1d087bd123bb4d292234',
+        'reference' => '44adf8f06b17c0ba7e9832a928151b1355784020',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -19,10 +19,19 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-        'tech-andaz/ship-drill' => array(
+        'getsafepay/sfpy-php' => array(
+            'pretty_version' => 'v0.0.9',
+            'version' => '0.0.9.0',
+            'reference' => 'b65aed2c2e0513c9559d4556b7af334566486b3b',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../getsafepay/sfpy-php',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'tech-andaz/pay-minion' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'db205a52e99582bee15b1d087bd123bb4d292234',
+            'reference' => '44adf8f06b17c0ba7e9832a928151b1355784020',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

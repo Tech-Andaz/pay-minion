@@ -9,7 +9,8 @@
         }
     ],
     "require": {
-        "getsafepay/safepay-php": "^1.0"
+        "getsafepay/safepay-php": "^1.0",
+        "getsafepay/sfpy-php": "^0.0.9"
     },
     "autoload": {
         "psr-4": {

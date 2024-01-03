@@ -7,5 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'TechAndaz\\' => array($baseDir . '/src'),
-    'Safepay\\' => array($vendorDir . '/getsafepay/safepay-php/src'),
+    'Safepay\\' => array($vendorDir . '/getsafepay/safepay-php/src', $vendorDir . '/getsafepay/sfpy-php/lib'),
 );

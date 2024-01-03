@@ -25,6 +25,7 @@ class ComposerStaticInit21c6ceb4627a99a95a11142bf4888236
         'Safepay\\' => 
         array (
             0 => __DIR__ . '/..' . '/getsafepay/safepay-php/src',
+            1 => __DIR__ . '/..' . '/getsafepay/sfpy-php/lib',
         ),
     );
 

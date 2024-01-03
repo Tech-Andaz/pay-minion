@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a9deed848dd72b42a124510bacca37a4",
+    "content-hash": "bbeed75217ff126806c9ec01e7a7424e",
     "packages": [
         {
             "name": "getsafepay/safepay-php",
@@ -45,6 +45,54 @@
                 "source": "https://github.com/getsafepay/safepay-php/tree/v1.0.0"
             },
             "time": "2022-08-18T09:26:59+00:00"
+        },
+        {
+            "name": "getsafepay/sfpy-php",
+            "version": "v0.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/getsafepay/sfpy-php.git",
+                "reference": "b65aed2c2e0513c9559d4556b7af334566486b3b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/getsafepay/sfpy-php/zipball/b65aed2c2e0513c9559d4556b7af334566486b3b",
+                "reference": "b65aed2c2e0513c9559d4556b7af334566486b3b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "3.5.0",
+                "phpstan/phpstan": "^1.2",
+                "phpunit/phpunit": "^5.7 || ^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Safepay\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Safepay",
+                    "email": "integrations@getsafepay.com"
+                }
+            ],
+            "description": "Safepay PHP Library",
+            "support": {
+                "issues": "https://github.com/getsafepay/sfpy-php/issues",
+                "source": "https://github.com/getsafepay/sfpy-php/tree/v0.0.9"
+            },
+            "time": "2023-11-14T11:54:51+00:00"
         }
     ],
     "packages-dev": [],
