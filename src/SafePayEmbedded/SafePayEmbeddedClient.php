@@ -13,6 +13,7 @@ class SafePayEmbeddedClient
     private $mode;
     private $currency;
     private $source;
+    private $vault_source;
 
 
     /**
@@ -32,6 +33,7 @@ class SafePayEmbeddedClient
         $this->mode = (isset($config['mode']) && $config['mode'] != "") ? $config['mode'] : "unscheduled_cof";
         $this->currency = (isset($config['currency']) && $config['currency'] != "") ? $config['currency'] : "PKR";
         $this->source = (isset($config['source']) && $config['source'] != "") ? $config['source'] : "Pay Minion";
+        $this->vault_source = (isset($config['vault_source']) && $config['vault_source'] != "") ? $config['vault_source'] : "mobile";
         $this->Safepay = new SafepayClient(array(
             "api_key" => $this->api_key,
             "api_base" => $this->api_url,
@@ -339,6 +341,49 @@ class SafePayEmbeddedClient
             return array(
                 "status" => 0,
                 "message" => "There was an error charging customer.",
+                "error" => $e->getError()
+            );
+        }
+    }
+
+    
+    /**
+    * SafePayEmbedded Charge Customer.
+    * @param array $config.
+    */
+    public function getCardVaultURL($customer_token = "", $type = "redirect")
+    {
+        $token = (isset($customer_token) && $customer_token != "") ? $customer_token : throw new SafePayEmbeddedException("Customer Token is missing");
+        try {
+            $session = $this->Safepay->order->setup([
+                "merchant_api_key" => $this->public_key,
+                "intent" => $this->intent,
+                "mode" => "instrument",
+                "currency" => $this->currency
+            ]);
+            $tbt = $this->Safepay->passport->create();
+            $params = array(
+                "environment" => $this->environment,
+                "tracker" => $session->tracker->token,
+                "source" => $this->vault_source,
+                "tbt" => $tbt,
+                "user_id" => $customer_token
+            );
+            $encoded = \http_build_query($params);
+            $url = $this->api_url . "/embedded?" . $encoded;
+            if($type == "url"){
+                return array(
+                    "status" => 1,
+                    "vault_url" => $url
+                );
+            } else if($type == "redirect"){
+                header("Location: " . $url);
+                die();
+            }
+        } catch (\Exception $e) {
+            return array(
+                "status" => 0,
+                "message" => "There was an error getting card vault url.",
                 "error" => $e->getError()
             );
         }

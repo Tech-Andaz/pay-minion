@@ -54,6 +54,17 @@ class SafePayEmbeddedAPI
     {
         return $this->SafePayEmbeddedClient->deleteCustomer($token);
     }
+    
+    /**
+    * Card Vault URL
+    *
+    * @return array
+    *   Decoded response data.
+    */
+    public function getCardVaultURL($token)
+    {
+        return $this->SafePayEmbeddedClient->getCardVaultURL($token);
+    }
 
     /**
     * Get All Payment Methods

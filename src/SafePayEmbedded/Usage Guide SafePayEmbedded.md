@@ -6,6 +6,7 @@
 - [Update Customer](#update-customer)
 - [Retrieve Customer](#retrieve-customer)
 - [Delete Customer](#delete-customer)
+- [Add Card](#add-card)
 - [Get All Payment Methods](#get-all-payment-methods)
 - [Get Payment Method](#get-payment-method)
 - [Delete Payment Method](#delete-payment-method)
@@ -90,6 +91,19 @@ try {
 try {
     $token = "cus_46f52953-a2fa-48b7-beaf-d3449ba860eb";
     $response = $SafePayEmbeddedAPI->deleteCustomer($token);
+    return $response;
+} catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+## Add Card
+```php
+<?php
+try {
+    $token = "cus_ef212de4-7b68-43ab-8fd6-2e9de8e2c0b3";
+    $type = "redirect"; // Optional - Defaults to redirect. options are: url / redirect
+    $response = $SafePayEmbeddedAPI->getCardVaultURL($token, $type);
     return $response;
 } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
     echo "Error: " . $e->getMessage() . "\n";

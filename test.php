@@ -14,6 +14,7 @@ $SafePayEmbeddedClient = new SafePayEmbeddedClient(array(
     "mode" => "unscheduled_cof", // Optional - Defaults to unscheduled_cof
     "currency" => "PKR", // Optional - Defaults to PKR
     "source" => "My App", // Optional - Defaults to Pay Minion
+    "vault_source" => "mobile" // Optional - Defaults to mobile. Important for rendering vault url in web view.
 ));
 $SafePayEmbeddedAPI = new SafePayEmbeddedAPI($SafePayEmbeddedClient);
 
@@ -26,7 +27,7 @@ function createCustomer($SafePayEmbeddedAPI){
             "email" => "contact@techandaz.com",
             "phone_number" => "+924235113700",
             "country" => "PK",
-            "is_guest" => true // Optioanl - Defaults to false. Options are: true / false
+            "is_guest" => false // Optioanl - Defaults to false. Options are: true / false
         );
         $response = $SafePayEmbeddedAPI->createCustomer($data);
         return $response;
@@ -69,6 +70,18 @@ function deleteCustomer($SafePayEmbeddedAPI){
     try {
         $token = "cus_46f52953-a2fa-48b7-beaf-d3449ba860eb";
         $response = $SafePayEmbeddedAPI->deleteCustomer($token);
+        return $response;
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
+
+//Get Card Vault URL
+function getCardVaultURL($SafePayEmbeddedAPI){
+    try {
+        $token = "cus_ef212de4-7b68-43ab-8fd6-2e9de8e2c0b3";
+        $type = "redirect"; // Optional - Defaults to redirect. options are: url / redirect
+        $response = $SafePayEmbeddedAPI->getCardVaultURL($token, $type);
         return $response;
     } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
         echo "Error: " . $e->getMessage() . "\n";
@@ -154,6 +167,7 @@ function verifyPaymentSecured($SafePayEmbeddedAPI){
 // echo json_encode(updateCustomer($SafePayEmbeddedAPI));
 // echo json_encode(retrieveCustomer($SafePayEmbeddedAPI));
 // echo json_encode(deleteCustomer($SafePayEmbeddedAPI));
+echo json_encode(getCardVaultURL($SafePayEmbeddedAPI));
 // echo json_encode(getAllPaymentMethods($SafePayEmbeddedAPI));
 // echo json_encode(getPaymentMethod($SafePayEmbeddedAPI));
 // echo json_encode(deletePaymentMethod($SafePayEmbeddedAPI));
