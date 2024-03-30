@@ -37,7 +37,7 @@ function createCheckoutLink($UBLAPI){
             "Amount" => 5000,
             "OrderName" => "Order from Tech Andaz",
         );
-        $response = $UBLAPI->createCheckoutLink($data);
+        $response = $UBLAPI->createCheckoutLink($data, "redirect"); //Optional - Will use "data" as type if nothing provided. Options are: "data" or "redirect"
         return $response;
     } catch (TechAndaz\UBL\UBLException $e) {
         echo "Error: " . $e->getMessage() . "\n";
@@ -71,6 +71,6 @@ function getFormFields($UBLAPI){
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-// echo json_encode(createCheckoutLink($UBLAPI));
-echo (getFormFields($UBLAPI));
+echo json_encode(createCheckoutLink($UBLAPI));
+// echo (getFormFields($UBLAPI));
 ?>

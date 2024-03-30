@@ -3,6 +3,7 @@
 ## Table of Contents - UBL Usage Guide
 - [Initialize UBL Client](#initialize)
 - [Create Checkout Link](#create-checkout-link)
+- [Redirect to Checkout Link](#redirect-to-checkout-link)
 - [Get Form Fields](#get-form-fields)
 ## Initialize
 
@@ -52,6 +53,34 @@ try {
         "OrderName" => "Order from Tech Andaz",
     );
     $response = $UBLAPI->createCheckoutLink($data);
+    return $response;
+} catch (TechAndaz\UBL\UBLException $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+
+## Redirect to Checkout Link
+
+```php
+<?php
+try {
+    $data = array(
+        "Customer" => "", // Optional - Will use default or value set during initialize. Will override if provided
+        "Store" => "", // Optional - Will use default or value set during initialize. Will override if provided
+        "Terminal" => "", // Optional - Will use default or value set during initialize. Will override if provided
+        "Channel" => "", // Optional - Will use default or value set during initialize. Will override if provided
+        "Currency" => "", // Optional - Will use default or value set during initialize. Will override if provided
+        "OrderID" => "", // Optional - Will generate unique ID if not provided
+        "OrderInfo" => "", // Optional
+        "TransactionHint" => "", // Optional - Will use default or value set during initialize. Will override if provided
+        "ReturnPath" => "", // Required / Optional - Will use value set during initialize if not provided. If both not provided will throw error
+        "UserName" => "", // Optional - Will use value provided during initialize or over ride if provided
+        "Password" => "", // Optional - Will use value provided during initialize or over ride if provided
+        "Amount" => 5000,
+        "OrderName" => "Order from Tech Andaz",
+    );
+    $response = $UBLAPI->createCheckoutLink($data, "redirect");
     return $response;
 } catch (TechAndaz\UBL\UBLException $e) {
     echo "Error: " . $e->getMessage() . "\n";

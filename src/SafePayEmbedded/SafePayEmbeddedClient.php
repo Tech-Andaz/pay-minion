@@ -366,7 +366,7 @@ class SafePayEmbeddedClient
                 "environment" => $this->environment,
                 "tracker" => $session->tracker->token,
                 "source" => $this->vault_source,
-                "tbt" => $tbt,
+                "tbt" => $tbt->token,
                 "user_id" => $customer_token
             );
             $encoded = \http_build_query($params);
