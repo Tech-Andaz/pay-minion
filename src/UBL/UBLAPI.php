@@ -18,7 +18,7 @@ class UBLAPI
     * @return array
     *   Decoded response data.
     */
-    public function createCheckoutLink($order, $type = "data")
+    public function createCheckoutLink($order)
     {
         if((!isset($order['Amount']) || $order['Amount'] == "")){
             throw new UBLException("Amount is missing.");
@@ -31,9 +31,6 @@ class UBLAPI
         }
         if($this->UBLClient->callback_url == "" && (!isset($order['ReturnPath']) || $order['ReturnPath'] == "")){
             throw new UBLException("Return Path is missing. It can either be set once for all transactions or provided against each order or both.");
-        }
-        if(($type != "data" && $type != "redirect")){
-            $type = "data";
         }
         $order['Customer'] = (isset($order['Customer']) && $order['Customer'] != "") ? $order['Customer'] : $this->UBLClient->customer;
         $order['Store'] = (isset($order['Store']) && $order['Store'] != "") ? $order['Store'] : $this->UBLClient->store;
@@ -50,19 +47,16 @@ class UBLAPI
         $postData = array(
             "Registration" => $order
         );
-        if($type == "data"){
-            return $this->UBLClient->makeRequest($endpoint, $method, $postData);
-        } else {
-            $payment_info = $this->UBLClient->makeRequest($endpoint, $method, $postData);
-            if((!isset($payment_info['Transaction']['PaymentPage']))){
-                throw new UBLException("There was an error getting payment page.");
-            }
-            
-            header('Location: '. $payment_info['Transaction']['PaymentPage']);
-            return;
-            
+        return $this->UBLClient->makeRequest($endpoint, $method, $postData);
+        
+    }
+    public function dynamicRedirect($data){
+        if((!isset($data['Transaction']['PaymentPage']))){
+            throw new UBLException("There was an error getting payment page.");
         }
         
+        header('Location: '. $data['Transaction']['PaymentPage']);
+        return;
     }
 
 

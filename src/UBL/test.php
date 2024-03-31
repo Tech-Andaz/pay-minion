@@ -37,7 +37,7 @@ function createCheckoutLink($UBLAPI){
             "Amount" => 5000,
             "OrderName" => "Order from Tech Andaz",
         );
-        $response = $UBLAPI->createCheckoutLink($data, "redirect"); //Optional - Will use "data" as type if nothing provided. Options are: "data" or "redirect"
+        $response = $UBLAPI->createCheckoutLink($data);
         return $response;
     } catch (TechAndaz\UBL\UBLException $e) {
         echo "Error: " . $e->getMessage() . "\n";

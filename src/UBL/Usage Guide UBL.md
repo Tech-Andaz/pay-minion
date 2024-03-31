@@ -80,8 +80,9 @@ try {
         "Amount" => 5000,
         "OrderName" => "Order from Tech Andaz",
     );
-    $response = $UBLAPI->createCheckoutLink($data, "redirect");
-    return $response;
+    $response = $UBLAPI->createCheckoutLink($data);
+    $UBLAPI->dynamicRedirect($response);
+    return;
 } catch (TechAndaz\UBL\UBLException $e) {
     echo "Error: " . $e->getMessage() . "\n";
 }
