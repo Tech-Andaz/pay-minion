@@ -4,6 +4,7 @@
 - [Initialize UBL Client](#initialize)
 - [Create Checkout Link](#create-checkout-link)
 - [Redirect to Checkout Link](#redirect-to-checkout-link)
+- [Finalize Payment](#finalize-payment)
 - [Get Form Fields](#get-form-fields)
 ## Initialize
 
@@ -88,6 +89,18 @@ try {
 }
 ?>
 ```
+## Finalize Payment
+
+```php
+<?php
+try {
+    return $UBLAPI->finalizePayment("261807270380");
+} catch (TechAndaz\UBL\UBLException $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+
 ## Get Form Fields
 
 Get Form Fields allows you to easily get and customize form fields.

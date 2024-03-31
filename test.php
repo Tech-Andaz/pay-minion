@@ -44,7 +44,13 @@ function createCheckoutLink($UBLAPI){
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-
+function finalizePayment($UBLAPI){
+    try {
+        return $UBLAPI->finalizePayment("261807270380");
+    } catch (TechAndaz\UBL\UBLException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
 //Get Form Fields
 function getFormFields($UBLAPI){
     try { 
@@ -72,6 +78,7 @@ function getFormFields($UBLAPI){
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-echo json_encode(createCheckoutLink($UBLAPI));
+// echo json_encode(createCheckoutLink($UBLAPI));
+echo json_encode(finalizePayment($UBLAPI));
 // echo (getFormFields($UBLAPI));
 ?>

@@ -58,6 +58,20 @@ class UBLAPI
         header('Location: '. $data['Transaction']['PaymentPage']);
         return;
     }
+    function finalizePayment($transaction_id){
+        $data = array(
+            "TransactionID" => $transaction_id,
+            "Customer" => $this->UBLClient->customer,
+            "UserName" => $this->UBLClient->username,
+            "Password" => $this->UBLClient->password,
+        );
+        $endpoint = '';
+        $method = 'POST';
+        $postData = array(
+            "Finalization" => $data
+        );
+        return $this->UBLClient->makeRequest($endpoint, $method, $postData);
+    }
 
 
     public function validateIdNameData($data)
