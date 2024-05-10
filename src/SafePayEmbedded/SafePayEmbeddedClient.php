@@ -13,6 +13,7 @@ class SafePayEmbeddedClient
     private $mode;
     private $currency;
     private $source;
+    private $is_implicit;
     private $vault_source;
 
 
@@ -34,6 +35,7 @@ class SafePayEmbeddedClient
         $this->currency = (isset($config['currency']) && $config['currency'] != "") ? $config['currency'] : "PKR";
         $this->source = (isset($config['source']) && $config['source'] != "") ? $config['source'] : "Pay Minion";
         $this->vault_source = (isset($config['vault_source']) && $config['vault_source'] != "") ? $config['vault_source'] : "mobile";
+        $this->is_implicit = (isset($config['is_implicit']) && $config['is_implicit'] != "") ? $config['is_implicit'] : false;
         $this->Safepay = new SafepayClient(array(
             "api_key" => $this->api_key,
             "api_base" => $this->api_url,
@@ -366,6 +368,7 @@ class SafePayEmbeddedClient
                 "environment" => $this->environment,
                 "tracker" => $session->tracker->token,
                 "source" => $this->vault_source,
+                "is_implicit" => $this->is_implicit,
                 "tbt" => $tbt->token,
                 "user_id" => $customer_token
             );

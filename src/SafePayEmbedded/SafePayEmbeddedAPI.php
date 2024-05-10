@@ -61,7 +61,7 @@ class SafePayEmbeddedAPI
     * @return array
     *   Decoded response data.
     */
-    public function getCardVaultURL($token, $url)
+    public function getCardVaultURL($token, $url = "redirect")
     {
         return $this->SafePayEmbeddedClient->getCardVaultURL($token, $url);
     }

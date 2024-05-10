@@ -3,7 +3,7 @@
         'name' => 'tech-andaz/pay-minion',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '44adf8f06b17c0ba7e9832a928151b1355784020',
+        'reference' => 'd68b37d4ad73c5e2f17bd0105035c91b1d90f2d9',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -31,7 +31,7 @@
         'tech-andaz/pay-minion' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '44adf8f06b17c0ba7e9832a928151b1355784020',
+            'reference' => 'd68b37d4ad73c5e2f17bd0105035c91b1d90f2d9',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

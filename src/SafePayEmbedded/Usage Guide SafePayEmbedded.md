@@ -31,6 +31,7 @@ $SafePayEmbeddedClient = new SafePayEmbeddedClient(array(
     "mode" => "unscheduled_cof", // Optional - Defaults to unscheduled_cof
     "currency" => "PKR", // Optional - Defaults to PKR
     "source" => "My App", // Optional - Defaults to Pay Minion
+    "is_implicit" => false, // Optional - True / False - Set to true if save card is mandatory
 ));
 $SafePayEmbeddedAPI = new SafePayEmbeddedAPI($SafePayEmbeddedClient);
 ?>
@@ -45,7 +46,7 @@ try {
         "email" => "contact@techandaz.com",
         "phone_number" => "+924235113700",
         "country" => "PK",
-        "is_guest" => true // Optioanl - Defaults to false. Options are: true / false
+        "is_guest" => 'true' // Optioanl - Defaults to false. Options are: true / false must be sent as string and not boolean only works when guest is false
     );
     $response = $SafePayEmbeddedAPI->createCustomer($data);
     return $response;
