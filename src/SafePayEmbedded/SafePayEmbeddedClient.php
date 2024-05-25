@@ -25,8 +25,8 @@ class SafePayEmbeddedClient
     {
         //LIVE = production
         //TEST = sandbox
-        $this->environment = (isset($config['environment']) && in_array($config['environment'], ['sandbox','production'])) ? $config['environment'] : "production";
-        $this->api_url = ($this->environment == 'production') ? "https://api.getsafepay.com" : "https://sandbox.api.getsafepay.com";
+        $this->environment = (isset($config['environment']) && in_array($config['environment'], ['sandbox','development','production'])) ? $config['environment'] : "production";
+        $this->api_url = ($this->environment == 'production') ? "https://api.getsafepay.com" : (($this->environment == 'development') ? "https://dev.api.getsafepay.com" : "https://sandbox.api.getsafepay.com");
         $this->api_key = (isset($config['api_key']) && $config['api_key'] != "") ? $config['api_key'] : throw new SafePayEmbeddedException("API Key is missing");
         $this->public_key = (isset($config['public_key']) && $config['public_key'] != "") ? $config['public_key'] : throw new SafePayEmbeddedException("Public Key is missing");
         $this->webhook_key = (isset($config['webhook_key']) && $config['webhook_key'] != "") ? $config['webhook_key'] : "";

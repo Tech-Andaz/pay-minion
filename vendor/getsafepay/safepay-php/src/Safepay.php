@@ -33,7 +33,7 @@ class Safepay extends Base
 
 		$this->validate($options);
 
-		if ($options['environment'] != static::SANDBOX  && $options['environment'] != static::PRODUCTION) {
+		if ($options['environment'] != static::SANDBOX  && $options['environment'] != static::PRODUCTION && $options['environment'] != "development") {
 			throw new \Exception("Safepay does not support " . $options['environment'] . " environment.", 1);
 		}
 
