@@ -56,6 +56,7 @@ class SafePayClient
             throw new SafePayException("Error generating Checkout Link.");
         }
         return array(
+            "status" => 1,
             "checkout_url" => $response['redirect'],
             "tracker" => $config['token']
         );
