@@ -83,7 +83,7 @@ class SafePayClient
         if( $this->Safepay->verify->webhook($data, $X_SFPY_SIGNATURE) === true) {
             return array(
                 "status" => 1,
-                "data" => file_get_contents('php://input')
+                "data" => json_decode(file_get_contents('php://input'),true)
             );
         } 
         throw new SafePayException("Failed to verify Signature.");
