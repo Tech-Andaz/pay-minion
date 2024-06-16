@@ -82,9 +82,12 @@ class SafePayAPI
     public function verifyWebhookSignature()
     {
         $X_SFPY_SIGNATURE = @$_SERVER['HTTP_X_SFPY_SIGNATURE'];
-        $data = file_get_contents('php://input');
+        $data = json_decode(file_get_contents('php://input'),true);
         if($this->SafePayClient->verifyWebhookSignature($data, $X_SFPY_SIGNATURE)  === true) {
-            return true;
+            return array(
+                "status" => 1,
+                "data" => $data
+            );
         }
         return false;
     }
