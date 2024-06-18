@@ -455,26 +455,11 @@ class SafePayEmbeddedClient
         try {
             $event = \Safepay\Webhook::constructEvent($payload, $sig_header, $webhook_secret);
             http_response_code(200);
-            switch ($event->type) {
-                case 'payment.succeeded':
-                    $payment = $event->data;
-                    return array(
-                        "status" => 1,
-                        "data" => $event->data
-                    );
-                case 'payment.failed':
-                    return array(
-                        "status" => 0,
-                        "message" => "Payment Failed.",
-                        "error" => $event->data
-                    );
-                default:
-                    return array(
-                        "status" => 0,
-                        "message" => "Recevied Unknown event type.",
-                        "error" => $event->type
-                    );
-            }
+            return array(
+                "status" => 1,
+                "type" => $event->type,
+                "data" => $event->data
+            );
         } catch (\Exception $e) {
             http_response_code(400);
             return array(

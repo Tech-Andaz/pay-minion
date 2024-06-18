@@ -5,6 +5,36 @@ require 'vendor/autoload.php';
 use TechAndaz\SafePayEmbedded\SafePayEmbeddedClient;
 use TechAndaz\SafePayEmbedded\SafePayEmbeddedAPI;
 
+$SafePayEmbeddedClient = new SafePayEmbeddedClient(array(
+    "environment" =>"sandbox", // Optional - Defaults to production. Options are: sandbox / production
+    "api_key" => "d11bf1408f381b8048d23d57bf628924b63e58f57fd4f72e622fa8623382a9aa",
+    "public_key" =>  "sec_14243867-4988-424b-a2f8-d138d38deb3e",
+    "webhook_key" =>  "175f26b3c3fd27f4f18ac1048d9721794e1934481d83dd010e083590c4decc3e",
+    "intent" => "CYBERSOURCE", // Optional - Defaults to CYBERSOURCE
+    "mode" => "unscheduled_cof", // Optional - Defaults to unscheduled_cof
+    "currency" => "PKR", // Optional - Defaults to PKR
+    "source" => "My App", // Optional - Defaults to Pay Minion
+));
+$SafePayEmbeddedAPI = new SafePayEmbeddedAPI($SafePayEmbeddedClient);
+
+//Create Customer
+function createCustomer($SafePayEmbeddedAPI){
+    try {
+        $data = array(
+            "first_name" => "Tech",
+            "last_name" => "Andaz",
+            "email" => "contact@techandaz.com",
+            "phone_number" => "+924235113700",
+            "country" => "PK",
+            "is_guest" => true // Optioanl - Defaults to false. Options are: true / false
+        );
+        $response = $SafePayEmbeddedAPI->createCustomer($data);
+        return $response;
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
+
 //Update Customer
 function updateCustomer($SafePayEmbeddedAPI){
     try {
@@ -100,6 +130,18 @@ function chargeCustomer($SafePayEmbeddedAPI){
     }
 }
 
+
+//Charge Customer
+function getCardVaultURL($SafePayEmbeddedAPI){
+    try {
+        $response = $SafePayEmbeddedAPI->getCardVaultURL("cus_63982800-0200-4e21-9226-7a8bbfd46fde");
+        return $response;
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
+
+
 //Verify Payment Webhook
 function verifyPayment($SafePayEmbeddedAPI){
     try {
@@ -120,51 +162,7 @@ function verifyPaymentSecured($SafePayEmbeddedAPI){
     }
 }
 
-
-
-$SafePayEmbeddedClient = new SafePayEmbeddedClient(array(
-    "environment" =>"development", // Optional - Defaults to production. Options are: sandbox / production
-    "api_key" => "efdc1ee87797e955b0c3b709006027b227f42b7dec84f7e07b17c39b982ca193",
-    "public_key" =>  "sec_d8139699-fa47-4bc2-92c9-941b02b94d73",
-    "webhook_key" =>  "175f26b3c3fd27f4f18ac1048d9721794e1934481d83dd010e083590c4decc3e",
-    "intent" => "CYBERSOURCE", // Optional - Defaults to CYBERSOURCE
-    "mode" => "unscheduled_cof", // Optional - Defaults to unscheduled_cof
-    "currency" => "PKR", // Optional - Defaults to PKR
-    "source" => "My App", // Optional - Defaults to Pay Minion,
-    "is_implicit" => 'false'
-));
-$SafePayEmbeddedAPI = new SafePayEmbeddedAPI($SafePayEmbeddedClient);
-
-//Create Customer
-function createCustomer($SafePayEmbeddedAPI){
-    try {
-        $data = array(
-            "first_name" => "Tech",
-            "last_name" => "Andaz",
-            "email" => "contact@techandaz.com",
-            "phone_number" => "+924235113700",
-            "country" => "PK",
-            "is_guest" => false // Optioanl - Defaults to false. Options are: true / false
-        );
-        $response = $SafePayEmbeddedAPI->createCustomer($data);
-        return $response;
-    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
-        echo "Error: " . $e->getMessage() . "\n";
-    }
-}
-
-function getCardVaultURL($SafePayEmbeddedAPI){
-    try {
-        $response = $SafePayEmbeddedAPI->getCardVaultURL("cus_815d0d88-e26d-41e9-b1fe-8bc116ce2910");
-        return $response;
-    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
-        echo "Error: " . $e->getMessage() . "\n";
-    }
-}
-
-// echo json_encode(createCustomer($SafePayEmbeddedAPI));
 echo json_encode(getCardVaultURL($SafePayEmbeddedAPI));
-// echo json_encode(getCardVaultURL($SafePayEmbeddedAPI));
 // echo json_encode(updateCustomer($SafePayEmbeddedAPI));
 // echo json_encode(retrieveCustomer($SafePayEmbeddedAPI));
 // echo json_encode(deleteCustomer($SafePayEmbeddedAPI));

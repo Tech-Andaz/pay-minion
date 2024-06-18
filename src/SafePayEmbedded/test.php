@@ -130,6 +130,18 @@ function chargeCustomer($SafePayEmbeddedAPI){
     }
 }
 
+
+//Charge Customer
+function getCardVaultURL($SafePayEmbeddedAPI){
+    try {
+        $response = $SafePayEmbeddedAPI->getCardVaultURL("cus_63982800-0200-4e21-9226-7a8bbfd46fde");
+        return $response;
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
+
+
 //Verify Payment Webhook
 function verifyPayment($SafePayEmbeddedAPI){
     try {
@@ -150,7 +162,7 @@ function verifyPaymentSecured($SafePayEmbeddedAPI){
     }
 }
 
-// echo json_encode(createCustomer($SafePayEmbeddedAPI));
+echo json_encode(getCardVaultURL($SafePayEmbeddedAPI));
 // echo json_encode(updateCustomer($SafePayEmbeddedAPI));
 // echo json_encode(retrieveCustomer($SafePayEmbeddedAPI));
 // echo json_encode(deleteCustomer($SafePayEmbeddedAPI));
