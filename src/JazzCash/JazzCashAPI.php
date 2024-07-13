@@ -123,21 +123,14 @@ class JazzCashAPI
     }
     public function processResponse(){
         if(!isset($_POST['pp_ResponseCode']) || $_POST['pp_ResponseCode'] == ""){
-            $_POST['pp_ResponseCode'] = "";
+            $_POST['pp_ResponseCode'] = "0";
         }
         if(!isset($_POST['pp_ResponseMessage']) || $_POST['pp_ResponseMessage'] == ""){
-            $_POST['pp_ResponseMessage'] = "";
-        }
-        if($_POST['pp_ResponseCode'] == 121){
-            $status = 1;
-            $message = "Transaction was successful";
-        } else {
-            $status = 0;
-            $message = "There was an error with your transaction";
+            $_POST['pp_ResponseMessage'] = "There was an unknown error with your transaction";
         }
         return array(
-            "status" => $status,
-            "message" => $message,
+            "status" => $_POST['pp_ResponseCode'],
+            "message" => $_POST['pp_ResponseMessage'],
             "data" => $_POST
         );
     }
