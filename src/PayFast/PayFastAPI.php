@@ -18,8 +18,7 @@ class PayFastAPI
     * @return array
     *   Decoded response data.
     */
-    public function createCheckoutLink($order, $response_type = "redirect")
-    {
+    public function createCheckoutLink($order, $response_type = "redirect"){
         if((!isset($order['TXNAMT']) || $order['TXNAMT'] == "")){
             throw new PayFastException("Transaction Amount is missing.");
         }
@@ -83,7 +82,182 @@ class PayFastAPI
             return;
         }
     }
-
+    public function getListofBanks(){
+        $endpoint = 'list/banks';
+        $method = 'GET';
+        $payload = $this->PayFastClient->makeAPIRequest($endpoint, $method);
+        if(isset($payload['banks']) && is_array($payload['banks']) && count($payload['banks']) > 0){
+            $banks = array();
+            foreach($payload['banks'] as $bank){
+                if($bank['is_wallet'] != 1){
+                    array_push($banks, $bank);
+                }
+            }
+            return array(
+                "status" => 1,
+                "data" => $banks
+            );
+        }
+        return array(
+            "status" => 0,
+            'error' => "Error getting list of banks",
+            "data" => $payload
+        );
+    }
+    public function getListofWallets(){
+        $endpoint = 'list/banks';
+        $method = 'GET';
+        $payload = $this->PayFastClient->makeAPIRequest($endpoint, $method);
+        if(isset($payload['banks']) && is_array($payload['banks']) && count($payload['banks']) > 0){
+            $banks = array();
+            foreach($payload['banks'] as $bank){
+                if($bank['is_wallet'] == 1){
+                    array_push($banks, $bank);
+                }
+            }
+            return array(
+                "status" => 1,
+                "data" => $banks
+            );
+        }
+        return array(
+            "status" => 0,
+            'error' => "Error getting list of wallets",
+            "data" => $payload
+        );
+    }
+    public function initiateBankPayment($order){
+        if((!isset($order['TXNAMT']) || $order['TXNAMT'] == "")){
+            throw new PayFastException("Transaction Amount is missing.");
+        }
+        if (!is_numeric($order['TXNAMT']) || filter_var($order['TXNAMT'], FILTER_VALIDATE_FLOAT) === false) {
+            throw new PayFastException("Transaction Amount must be a number or float.");
+        }
+        if((!isset($order['cnic_number']) || $order['cnic_number'] == "")){
+            throw new PayFastException("CNIC is missing.");
+        }
+        if((!isset($order['account_number']) || $order['account_number'] == "")){
+            throw new PayFastException("Account Number is missing.");
+        }
+        if((!isset($order['bank_code']) || $order['bank_code'] == "")){
+            throw new PayFastException("Bank Code is missing.");
+        }
+        if((!isset($order['account_type']) || $order['account_type'] == "")){
+            throw new PayFastException("Account Type is missing.");
+        }
+        if($order['account_type'] == "wallet"){
+            $account_type_id = 4;
+        } else if($order['account_type'] == "bank"){
+            $account_type_id = 3;
+        } else {
+            throw new PayFastException("Incorrect account type");
+        }
+        $order_data = array(
+            "basket_id" => (isset($order['BASKET_ID']) && $order['BASKET_ID'] != "") ? $order['BASKET_ID'] : uniqid(),
+            "txnamt" => $order['TXNAMT'],
+            "customer_mobile_no" => (isset($order['customer_phone']) && $order['customer_phone'] != "") ? $order['customer_phone'] : "",
+            "customer_email_address" => (isset($order['customer_email']) && $order['customer_email'] != "") ? $order['customer_email'] : "",
+            "order_date" => (isset($order['order_date']) && $order['order_date'] != "") ? $order['order_date'] : date("Y-m-d H:i:s"),
+            "cnic_number" => $order['cnic_number'],
+            "bank_code" => $order['bank_code'],
+            "account_type_id" => $account_type_id,
+            "account_number" => $order['account_number'],
+            "currency_code" => (isset($order['currency_code']) && $order['currency_code'] != "") ? $order['currency_code'] : $this->PayFastClient->currency_code,
+        );
+        $endpoint = 'customer/validate';
+        $method = 'POST';
+        $payload = $this->PayFastClient->makeAPIRequest($endpoint, $method, $order_data);
+        if(!isset($payload['message']) || $payload['message'] != "Validated"){
+            return array(
+                "status" => 0,
+                'error' => $payload['message'],
+                "data" => $payload
+            );
+        }
+        $transaction_id = $payload['transaction_id'];
+        return array(
+            "status" => 1,
+            "data" => $payload
+        );
+    }
+    public function makeBankPayment($order){
+        if((!isset($order['TXNAMT']) || $order['TXNAMT'] == "")){
+            throw new PayFastException("Transaction Amount is missing.");
+        }
+        if (!is_numeric($order['TXNAMT']) || filter_var($order['TXNAMT'], FILTER_VALIDATE_FLOAT) === false) {
+            throw new PayFastException("Transaction Amount must be a number or float.");
+        }
+        if((!isset($order['cnic_number']) || $order['cnic_number'] == "")){
+            throw new PayFastException("CNIC is missing.");
+        }
+        if((!isset($order['account_number']) || $order['account_number'] == "")){
+            throw new PayFastException("Account Number is missing.");
+        }
+        if((!isset($order['bank_code']) || $order['bank_code'] == "")){
+            throw new PayFastException("Bank Code is missing.");
+        }
+        if((!isset($order['account_type']) || $order['account_type'] == "")){
+            throw new PayFastException("Account Type is missing.");
+        }
+        if((!isset($order['transaction_id']) || $order['transaction_id'] == "")){
+            throw new PayFastException("Transaction ID is missing.");
+        }
+        if((!isset($order['otp_code']) || $order['otp_code'] == "")){
+            throw new PayFastException("OTP Code is missing.");
+        }
+        if($order['account_type'] == "wallet"){
+            $account_type_id = 4;
+        } else if($order['account_type'] == "bank"){
+            $account_type_id = 3;
+        } else {
+            throw new PayFastException("Incorrect account type");
+        }
+        $order_data = array(
+            "basket_id" => (isset($order['BASKET_ID']) && $order['BASKET_ID'] != "") ? $order['BASKET_ID'] : uniqid(),
+            "txnamt" => $order['TXNAMT'],
+            "customer_mobile_no" => (isset($order['customer_phone']) && $order['customer_phone'] != "") ? $order['customer_phone'] : "",
+            "customer_email_address" => (isset($order['customer_email']) && $order['customer_email'] != "") ? $order['customer_email'] : "",
+            "order_date" => (isset($order['order_date']) && $order['order_date'] != "") ? $order['order_date'] : date("Y-m-d H:i:s"),
+            "cnic_number" => $order['cnic_number'],
+            "bank_code" => $order['bank_code'],
+            "account_type_id" => $account_type_id,
+            "account_number" => $order['account_number'],
+            "currency_code" => (isset($order['currency_code']) && $order['currency_code'] != "") ? $order['currency_code'] : $this->PayFastClient->currency_code,
+            "transaction_id" => $order['transaction_id'],
+            "otp" => $order['otp_code'],
+            "otp_required" => "yes",
+        );
+        $endpoint = 'transaction';
+        $method = 'POST';
+        $payload = $this->PayFastClient->makeAPIRequest($endpoint, $method, $order_data);
+        if(!isset($payload['status_msg']) || $payload['status_msg'] != "Processed OK"){
+            return array(
+                "status" => 0,
+                'error' => $payload['status_msg'],
+                "data" => $payload
+            );
+        }
+        return array(
+            "status" => 1,
+            "data" => $payload
+        );        
+    }
+    public function validateTransaction($transaction_id){
+        $endpoint = 'transaction/view/id?transaction_id=' . $transaction_id;
+        $method = 'GET';
+        $payload = $this->PayFastClient->makeVerifyRequest($endpoint, $method);
+        if(!isset($payload['message']) || $payload['message'] != "Request has been completed successfully."){
+            return array(
+                "status" => 0,
+                'error' => $payload['message'],
+                "data" => $payload
+            );
+        }
+        return array(
+            "status" => 1,
+            "data" => $payload['data']
+        );        
+    }
     public function dynamicRedirect($order_data){
         $form_submission_url = $this->PayFastClient->api_url . 'Transaction/PostTransaction';
         $form = $this->generateForm($order_data, $form_submission_url);
@@ -115,9 +289,7 @@ class PayFastAPI
         </form>';
         return $form;
     }
-
-    public function validateIdNameData($data)
-    {
+    public function validateIdNameData($data){
         if (!is_array($data)) {
             throw new PayFastException('Invalid data structure. Each data must be an associative array.');
         }
