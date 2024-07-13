@@ -49,6 +49,6 @@ function processResponse($JazzCashAPI){
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-// echo (createCheckoutLink($JazzCashAPI));
-echo (processResponse($JazzCashAPI));
+echo (createCheckoutLink($JazzCashAPI));
+// echo (processResponse($JazzCashAPI));
 ?>

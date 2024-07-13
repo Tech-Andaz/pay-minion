@@ -121,7 +121,7 @@ class JazzCashAPI
         </form>';
         return $form;
     }
-    public function processResponse(){
+    public function processResponse(){ 
         if(!isset($_POST['pp_ResponseCode']) || $_POST['pp_ResponseCode'] == ""){
             $_POST['pp_ResponseCode'] = "0";
         }
