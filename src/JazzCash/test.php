@@ -11,7 +11,7 @@ $JazzCashClient = new JazzCashClient(array(
     "password" => "5990v09a6d",
     "integerity_salt" => "zx82t8029e",
     "domain_code" => "TA", //max 3 character code to be appended for all Transaction Reference numbers 
-    "return_url" => "https://portal.techandaz.com/payments/jazzcash/response",
+    "return_url" => "https://techandaz.com/success",
 ));
 
 $JazzCashAPI = new JazzCashAPI($JazzCashClient);
