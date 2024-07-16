@@ -12,6 +12,19 @@ class JazzCashClient
     public $integerity_salt;
     public $hash_request;
     public $domain_code;
+    public $checkout_url;
+    public $wallet_url;
+    public $wallet_transaction_url;
+    public $transaction_status_url;
+    public $card_refund_url;
+    public $wallet_refund_url;
+    public $bank_id;
+    public $registered_user;
+    public $language;
+    public $product_id;
+    public $transaction_type;
+    public $version;
+    public $sub_merchant_id;
 
     /**
     * JazzCashClient constructor.
@@ -19,19 +32,32 @@ class JazzCashClient
     */
     public function __construct($config)
     {
-        //LIVE = https://payments.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/
-        //TEST = https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/
+        //LIVE = https://payments.jazzcash.com.pk/
+        //TEST = https://sandbox.jazzcash.com.pk/
         $this->environment = (isset($config['environment']) && in_array($config['environment'], ['sandbox','production'])) ? $config['environment'] : "production";
-        $this->api_url = ($this->environment == 'production') ? "https://payments.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/" : "https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/";
+        $this->api_url = ($this->environment == 'production') ? "https://payments.jazzcash.com.pk/" : "https://sandbox.jazzcash.com.pk/";
         $this->currency = (isset($config['currency']) && $config['currency'] != "") ? $config['currency'] : "PKR";
         $this->merchant_id = (isset($config['merchant_id']) && $config['merchant_id'] != "") ? $config['merchant_id'] : throw new JazzCashException("Merchant ID is missing");
         $this->password = (isset($config['password']) && $config['password'] != "") ? $config['password'] : throw new JazzCashException("Password is missing");
         $this->integerity_salt = (isset($config['integerity_salt']) && $config['integerity_salt'] != "") ? $config['integerity_salt'] : throw new JazzCashException("Integerity Salt is missing");
         $this->return_url = (isset($config['return_url']) && $config['return_url'] != "") ? $config['return_url'] : throw new JazzCashException("Return URL is missing");
+        $this->bank_id = (isset($config['bank_id']) && $config['bank_id'] != "") ? $config['bank_id'] : "";
+        $this->registered_user = (isset($config['registered_user']) && $config['registered_user'] != "") ? $config['registered_user'] : "No";
+        $this->language = (isset($config['language']) && $config['language'] != "") ? $config['language'] : "EN";
+        $this->product_id = (isset($config['product_id']) && $config['product_id'] != "") ? $config['product_id'] : "";
+        $this->transaction_type = (isset($config['transaction_type']) && $config['transaction_type'] != "") ? $config['transaction_type'] : "";
+        $this->version = (isset($config['version']) && $config['version'] != "") ? $config['version'] : "2.0";
+        $this->sub_merchant_id = (isset($config['sub_merchant_id']) && $config['sub_merchant_id'] != "") ? $config['sub_merchant_id'] : "";
         $this->domain_code = (isset($config['domain_code']) && $config['domain_code'] != "") ? $config['domain_code'] : throw new JazzCashException("Domain Code is missing");
         if(strlen($this->domain_code) > 3){
             throw new JazzCashException("Domain Code can not be more than 3 character long");
         }
+        $this->checkout_url = "CustomerPortal/transactionmanagement/merchantform/";
+        $this->wallet_url = "WalletLinkingPortal/wallet/LinkWallet/";
+        $this->wallet_transaction_url = "ApplicationAPI/API/4.0/purchase/domwallettransactionviatoken";
+        $this->transaction_status_url = "ApplicationAPI/API/PaymentInquiry/Inquire";
+        $this->card_refund_url = "ApplicationAPI/API/authorize/Refund";
+        $this->wallet_refund_url = "ApplicationAPI/API/Purchase/domwalletrefundtransaction";
     }
 
     /**

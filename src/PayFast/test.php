@@ -43,7 +43,6 @@ function createCheckoutLink($PayFastAPI){
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-
 //Dynamic Redirect
 function dynamicRedirect($PayFastAPI){
     try {
@@ -68,7 +67,6 @@ function dynamicRedirect($PayFastAPI){
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-
 //Get Form Fields
 function getFormFields($PayFastAPI){
     try { 
