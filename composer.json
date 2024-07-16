@@ -16,5 +16,10 @@
         "psr-4": {
             "TechAndaz\\": "src/"
         }
-    }
+    },
+    "exclude-from-classmap": [
+        "/src/AlfalahAPG/API Docs Alfalah APG.pdf",
+        "/src/JazzCash/API Docs JazzCash.pdf",
+        "/src/UBL/Api Docs UBL.pdf"
+    ]
 }
