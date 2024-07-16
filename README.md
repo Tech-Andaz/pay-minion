@@ -26,7 +26,7 @@ composer require tech-andaz/pay-minion
 |PayFast|[PayFast Usage Guide](src/PayFast/Usage%20Guide%20PayFast.md)| - | Hosted| -|
 |Alfalah IPG|[Alfalah IPG Usage Guide](src/AlfalahIPG/Usage%20Guide%20AlfalahIPG.md)|  v77 | Hosted|[Alfalah IPG API Docs](https://test-bankalfalah.gateway.mastercard.com/api/documentation/integrationGuidelines/index.html)|
 |Alfalah APG|[Alfalah APG Usage Guide](src/AlfalahAPG/Usage%20Guide%20AlfalahAPG.md)| v1.1 | Hosted| [Alfalah APG API Docs](src/AlfalahAPG/API%20Docs%20Alfalah%20APG.pdf)|
-|JazzCash|[JazzCash Usage Guide](src/JazzCash/Usage%20Guide%20JazzCash.md)| v2.0 | Both | [JazzCash API Docs](src/AlfalahAPG/API%20Docs%20JazzCash.pdf)|
+|JazzCash|[JazzCash Usage Guide](src/JazzCash/Usage%20Guide%20JazzCash.md)| v2.0 | Both | [JazzCash API Docs](src/JazzCash/API%20Docs%20JazzCash.pdf)|
 |AbhiPay|[AbhiPay Usage Guide](src/AbhiPay/Usage%20Guide%20AbhiPay.md)| v3.0 | Hosted | [AbhiPay API Docs](https://docs.abhipay.com.pk/)|
 
 ## License
