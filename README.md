@@ -28,6 +28,7 @@ composer require tech-andaz/pay-minion
 |Alfalah APG|[Alfalah APG Usage Guide](src/AlfalahAPG/Usage%20Guide%20AlfalahAPG.md)| v1.1 | Hosted| [Alfalah APG API Docs](src/AlfalahAPG/API%20Docs%20Alfalah%20APG.pdf)|
 |JazzCash|[JazzCash Usage Guide](src/JazzCash/Usage%20Guide%20JazzCash.md)| v2.0 | Both | [JazzCash API Docs](src/JazzCash/API%20Docs%20JazzCash.pdf)|
 |AbhiPay|[AbhiPay Usage Guide](src/AbhiPay/Usage%20Guide%20AbhiPay.md)| v3.0 | Hosted | [AbhiPay API Docs](https://docs.abhipay.com.pk/)|
+|BaadMay|[BaadMay Usage Guide](src/BaadMay/Usage%20Guide%20BaadMay.md)| v1.0 | Hosted | [BaadMay API Docs](src/BaadMay/API%20Docs%20BaadMay.pdf)|
 
 ## License
 
