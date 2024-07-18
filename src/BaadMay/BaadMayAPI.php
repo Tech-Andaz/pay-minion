@@ -70,7 +70,7 @@ class BaadMayAPI
                 "sku" => (isset($item['sku']) && $item['sku'] != "") ? $item['sku'] : uniqid(),
                 "name" => (isset($item['name']) && $item['name'] != "") ? $item['name'] : "",
                 "qty" => (isset($item['qty']) && $item['qty'] != "") ? $item['qty'] : 1,
-                "price" => (isset($item['price']) && $item['price'] != "") ? $item['price'] : 1
+                "price" => (float)(isset($item['price']) && $item['price'] != "") ? $item['price'] : 1
             ));
         }
 
@@ -78,7 +78,7 @@ class BaadMayAPI
             "apiKey" => $this->BaadMayClient->api_key,
             "orderId" => (isset($order['order_id']) && $order['order_id'] != "") ? $order['order_id'] : uniqid(),
             "createdAt" => date("Y-m-d H:i:s"),
-            "totalAmount" => $order['amount'],
+            "totalAmount" => (float)$order['amount'],
             "items" => $items,
             "customer" => $customer,
             "billing" => $billing,

@@ -19,6 +19,7 @@ class AbhiPayAPI
         if($this->AbhiPayClient->return_url == "" && (!isset($order['return_url']) || $order['return_url'] == "")){
             throw new AlfalahIPGException("Return URL is missing. It can either be set once for all transactions or provided against each order or both.");
         }
+        $order['amount'] = (float)$order['amount'];
         $order['clientTransactionId'] = (isset($order['transaction_reference']) && $order['transaction_reference'] != "") ? $order['transaction_reference'] : uniqid();
         $order['currency'] = (isset($order['currency']) && $order['currency'] != "") ? $order['currency'] : $this->AbhiPayClient->currency;
         $order['language'] = (isset($order['language']) && $order['language'] != "") ? $order['language'] : $this->AbhiPayClient->language;
