@@ -157,8 +157,7 @@ class JazzCashAPI
                     document.getElementById("payment_form_jazzcash").submit();
                 });
             </script>';
-            echo $form;
-            return;
+            return $form;
         }
     }
     public function generateWalletForm($order, $secure_hash){
