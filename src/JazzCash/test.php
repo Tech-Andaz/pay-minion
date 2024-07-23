@@ -87,7 +87,7 @@ function linkedMobileAccountTransaction($JazzCashAPI){
 //Transaction Status
 function transactionStatus($JazzCashAPI){
     try {
-        $transaction_reference = "T20220203110109";
+        $transaction_reference = "TA2024072313140819";
         $response = $JazzCashAPI->transactionStatus($transaction_reference);
         return $response;
     } catch (TechAndaz\JazzCash\JazzCashException $e) {
@@ -120,8 +120,8 @@ function refundWalletTransaction($JazzCashAPI){
 // echo json_encode(createCheckoutLink($JazzCashAPI));
 // echo json_encode(processResponse($JazzCashAPI));
 // echo json_encode(mobileAccountLinking($JazzCashAPI));
-echo json_encode(linkedMobileAccountTransaction($JazzCashAPI));
-// echo json_encode(transactionStatus($JazzCashAPI));
+// echo json_encode(linkedMobileAccountTransaction($JazzCashAPI));
+echo json_encode(transactionStatus($JazzCashAPI));
 // echo json_encode(refundCardTransaction($JazzCashAPI));
 // echo json_encode(refundWalletTransaction($JazzCashAPI));
 ?>
