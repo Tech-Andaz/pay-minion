@@ -182,6 +182,7 @@ class JazzCashAPI
         if((!isset($order['payment_token']) || $order['payment_token'] == "")){
             throw new JazzCashException("Payment Token is missing.");
         }
+        $order['amount'] = $order['amount'] * 100;
         $order['transaction_reference'] = (isset($order['transaction_reference']) && $order['transaction_reference'] != "") ? $this->JazzCashClient->domain_code . $order['transaction_reference'] : $this->JazzCashClient->domain_code . date('YmdHis') . mt_rand(10, 100);;
         if(strlen($order['transaction_reference']) > 20 || strlen($order['transaction_reference']) <= 0){
             throw new JazzCashException("Transaction Reference must be a maximum of 20 characters, can not be empty & must be unique");
@@ -313,6 +314,7 @@ class JazzCashAPI
         if((!isset($transaction_reference) || $transaction_reference == "")){
             throw new JazzCashException("Transaction Reference is missing.");
         }
+        $amount = $amount * 100;
         $hash_data = array(
             $amount,
             $this->JazzCashClient->merchant_id,
@@ -363,6 +365,7 @@ class JazzCashAPI
         if((!isset($transaction_reference) || $transaction_reference == "")){
             throw new JazzCashException("Transaction Reference is missing.");
         }
+        $amount = $amount * 100;
         $hash_data = array(
             $amount,
             $this->JazzCashClient->merchant_id,
