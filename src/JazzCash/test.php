@@ -66,7 +66,7 @@ function linkedMobileAccountTransaction($JazzCashAPI){
     try {
         $data = array(
             "amount" => 25.30,
-            "payment_token" => "jwMcs3dX20iM0Kz6gg3kTrtst7TS/juK",
+            "payment_token" => "LI0yTger3EgcVsX1aEzSQpCaOUl8mN1w",
             "bill_reference" =>  "billRef",
             "transaction_reference" => "", // Optional - max 17 character length - domain_code will be added in the beggining - leave empty for auto generated
             "description" => "description",
@@ -120,8 +120,8 @@ function refundWalletTransaction($JazzCashAPI){
 // echo json_encode(createCheckoutLink($JazzCashAPI));
 // echo json_encode(processResponse($JazzCashAPI));
 // echo json_encode(mobileAccountLinking($JazzCashAPI));
-// echo json_encode(linkedMobileAccountTransaction($JazzCashAPI));
+echo json_encode(linkedMobileAccountTransaction($JazzCashAPI));
 // echo json_encode(transactionStatus($JazzCashAPI));
 // echo json_encode(refundCardTransaction($JazzCashAPI));
-echo json_encode(refundWalletTransaction($JazzCashAPI));
+// echo json_encode(refundWalletTransaction($JazzCashAPI));
 ?>

@@ -272,7 +272,7 @@ class SafePayEmbeddedClient
         try {
             $paymentMethod = $this->Safepay->paymentMethod->delete($token, $payment_token);
             return array(
-                "status" => 1
+                "status" => 1,
             );
         } catch (\Exception $e) {
             return array(
