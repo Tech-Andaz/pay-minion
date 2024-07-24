@@ -52,7 +52,7 @@ function processResponse($JazzCashAPI){
 function mobileAccountLinking($JazzCashAPI){
     try {
         $data = array(
-            "account_number" => "03234896599",
+            "account_number" => "03231231234",
         );
         $response_type = "redirect"; // redirect / form - Defaults to redirect, Redirect will automatically redirect user to payment page, form will return html form with fields and values
         $response = $JazzCashAPI->mobileAccountLinking($data, $response_type);
@@ -66,7 +66,7 @@ function linkedMobileAccountTransaction($JazzCashAPI){
     try {
         $data = array(
             "amount" => 25.30,
-            "payment_token" => "LI0yTger3EgcVsX1aEzSQpCaOUl8mN1w",
+            "payment_token" => "KfJ2kwqr3EjDWayU8mWOSZgMH3HdL3L7",
             "bill_reference" =>  "billRef",
             "transaction_reference" => "", // Optional - max 17 character length - domain_code will be added in the beggining - leave empty for auto generated
             "description" => "description",
@@ -87,7 +87,7 @@ function linkedMobileAccountTransaction($JazzCashAPI){
 //Transaction Status
 function transactionStatus($JazzCashAPI){
     try {
-        $transaction_reference = "TA2024072313140819";
+        $transaction_reference = "TA2024072313263799";
         $response = $JazzCashAPI->transactionStatus($transaction_reference);
         return $response;
     } catch (TechAndaz\JazzCash\JazzCashException $e) {
@@ -119,9 +119,9 @@ function refundWalletTransaction($JazzCashAPI){
 }
 // echo json_encode(createCheckoutLink($JazzCashAPI));
 // echo json_encode(processResponse($JazzCashAPI));
-echo json_encode(mobileAccountLinking($JazzCashAPI));
+// echo (mobileAccountLinking($JazzCashAPI));
 // echo json_encode(linkedMobileAccountTransaction($JazzCashAPI));
-// echo json_encode(transactionStatus($JazzCashAPI));
+echo json_encode(transactionStatus($JazzCashAPI));
 // echo json_encode(refundCardTransaction($JazzCashAPI));
 // echo json_encode(refundWalletTransaction($JazzCashAPI));
 ?>

@@ -246,11 +246,11 @@ class JazzCashAPI
             "pp_TxnExpiryDateTime" => $order['expiry_time'],
             "pp_SecureHash" => $secure_hash,
             "pp_DiscountedAmount" => $order['discounted_amount'],
-            "ppmpf_1" => $order['metafield_1'],
-            "ppmpf_2" => $order['metafield_2'],
-            "ppmpf_3" => $order['metafield_3'],
-            "ppmpf_4" => $order['metafield_4'],
-            "ppmpf_5" => $order['metafield_5']
+            "ppmpf_1" => isset($order['metafield_1']) ? $order['metafield_1'] : "",
+            "ppmpf_2" => isset($order['metafield_2']) ? $order['metafield_2'] : "",
+            "ppmpf_3" => isset($order['metafield_3']) ? $order['metafield_3'] : "",
+            "ppmpf_4" => isset($order['metafield_4']) ? $order['metafield_4'] : "",
+            "ppmpf_5" => isset($order['metafield_5']) ? $order['metafield_5'] : "",
         );
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->JazzCashClient->api_url .  $this->JazzCashClient->wallet_transaction_url);
