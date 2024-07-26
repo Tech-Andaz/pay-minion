@@ -86,7 +86,7 @@ class BaadMayAPI
             "success_url" => (isset($order['success_url']) && $order['success_url'] != "") ? $order['success_url'] : $this->BaadMayClient->success_url,
             "failure_url" => (isset($order['failure_url']) && $order['failure_url'] != "") ? $order['failure_url'] : $this->BaadMayClient->failure_url,
         );
-        $url = $this->BaadMayClient->api_url . "?q=" . base64_encode(json_encode($order_data));
+        $url = $this->BaadMayClient->api_url . "?q=" . base64_encode(json_encode($order_data, JSON_PRESERVE_ZERO_FRACTION));
         if($response_type == "response"){
             return array(
                 "status" => 1,
