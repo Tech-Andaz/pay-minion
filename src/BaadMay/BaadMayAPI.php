@@ -50,7 +50,7 @@ class BaadMayAPI
         );
         $shipping = array(
             "method" => (isset($order['shipping']['method']) && $order['shipping']['method'] != "") ? $order['shipping']['method'] : "",
-            "cost" => (float)(isset($order['shipping']['cost']) && $order['shipping']['cost'] != "") ? number_format($order['shipping']['cost'],2, '.', '') : 0,
+            "cost" => (isset($order['shipping']['cost']) && $order['shipping']['cost'] != "") ? (float)number_format($order['shipping']['cost'],2, '.', '') : 0.00,
             "firstname" => (isset($order['shipping']['first_name']) && $order['shipping']['first_name'] != "") ? $order['shipping']['first_name'] : "",
             "lastname" => (isset($order['shipping']['last_name']) && $order['shipping']['last_name'] != "") ? $order['shipping']['last_name'] : "",
             "address" => array(
