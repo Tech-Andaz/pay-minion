@@ -50,7 +50,7 @@ class BaadMayAPI
         );
         $shipping = array(
             "method" => (isset($order['shipping']['method']) && $order['shipping']['method'] != "") ? $order['shipping']['method'] : "",
-            "cost" => (isset($order['shipping']['cost']) && $order['shipping']['cost'] != "") ? number_format($order['shipping']['cost'],2, '.', '') : 0,
+            "cost" => (float)(isset($order['shipping']['cost']) && $order['shipping']['cost'] != "") ? number_format($order['shipping']['cost'],2, '.', '') : 0,
             "firstname" => (isset($order['shipping']['first_name']) && $order['shipping']['first_name'] != "") ? $order['shipping']['first_name'] : "",
             "lastname" => (isset($order['shipping']['last_name']) && $order['shipping']['last_name'] != "") ? $order['shipping']['last_name'] : "",
             "address" => array(
@@ -70,7 +70,7 @@ class BaadMayAPI
                 "sku" => (isset($item['sku']) && $item['sku'] != "") ? $item['sku'] : uniqid(),
                 "name" => (isset($item['name']) && $item['name'] != "") ? $item['name'] : "",
                 "qty" => (isset($item['qty']) && $item['qty'] != "") ? $item['qty'] : 1,
-                "price" => number_format((float)$item['price'],2, '.', '')
+                "price" => (float)number_format((float)$item['price'],2, '.', '')
             ));
         }
 
@@ -78,7 +78,7 @@ class BaadMayAPI
             "apiKey" => $this->BaadMayClient->api_key,
             "orderId" => (isset($order['order_id']) && $order['order_id'] != "") ? $order['order_id'] : uniqid(),
             "createdAt" => date("Y-m-d H:i:s"),
-            "totalAmount" => number_format((float)$order['amount'],2, '.', ''),
+            "totalAmount" => (float)number_format((float)$order['amount'],2, '.', ''),
             "items" => $items,
             "customer" => $customer,
             "billing" => $billing,
