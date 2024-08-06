@@ -440,11 +440,12 @@ class SafePayEmbeddedClient
                         window.location.href = \'' . $andaz_3ds_data['fail_url'] . '?status=0&message="3DS Payment request timed out"\';
                     }
                 }
-                window.onload = function() { 
-                var cardinalCollectionForm = document.querySelector(\'#cardinal_collection_form\'); 
-                if(cardinalCollectionForm) 
-                    cardinalCollectionForm.submit();
-                }
+                $( document ).ready(function() {
+                    var cardinalCollectionForm = document.querySelector(\'#cardinal_collection_form\'); 
+                    if(cardinalCollectionForm) {
+                        cardinalCollectionForm.submit();
+                    }
+                });
                 window.addEventListener("message", function(event) {
                     if(event.origin === "' . $this->three_ds_url . '") {
                         var receive_data = JSON.parse(event.data);

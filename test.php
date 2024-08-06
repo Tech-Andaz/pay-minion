@@ -159,6 +159,8 @@ function process3DSRequest($SafePayEmbeddedAPI, $data){
             return $response;
         } else if($response['status'] == 2){
             //3DS OTP required
+            print_r($response);
+            exit;
             echo $SafePayEmbeddedAPI->requestOTPCode3DS($response);
             return;
         } else {
@@ -208,6 +210,8 @@ if(isset($_GET['3dsverify']) && $_GET['3dsverify'] == 1){
 } else if(isset($_GET['3dsresponse']) && $_GET['3dsresponse'] == 1){
     //Successful 3DS
     try {
+        print_r($_GET);
+        exit;
         $response = $SafePayEmbeddedAPI->charge3DS($_GET);
         print_r($response);
         return $response;
