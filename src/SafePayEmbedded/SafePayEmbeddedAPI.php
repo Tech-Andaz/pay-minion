@@ -119,6 +119,14 @@ class SafePayEmbeddedAPI
     {
         return $this->SafePayEmbeddedClient->process3DSRequest($data);
     }
+    public function requestOTPCode3DS($data)
+    {
+        return $this->SafePayEmbeddedClient->requestOTPCode3DS($data);
+    }
+    public function charge3DS($data)
+    {
+        return $this->SafePayEmbeddedClient->charge3DS($data);
+    }
     
     /**
     * Verify Payment Webhook

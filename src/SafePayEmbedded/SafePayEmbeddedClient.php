@@ -310,11 +310,13 @@ class SafePayEmbeddedClient
         $success_url = "";
         $fail_url = "";
         $verification_url = "";
-
+        $not_enrolled_charge = 0;
+        
         if($threeDS == 1){
             $success_url = (isset($order['3ds_verification_success_url']) && $order['3ds_verification_success_url'] != "") ? $order['3ds_verification_success_url'] : throw new SafePayEmbeddedException("3DS Success URL is required");
             $fail_url = (isset($order['3ds_verification_fail_url']) && $order['3ds_verification_fail_url'] != "") ? $order['3ds_verification_fail_url'] : throw new SafePayEmbeddedException("3DS Failure URL is required");
             $verification_url = (isset($order['3ds_verification_verification_url']) && $order['3ds_verification_verification_url'] != "") ? $order['3ds_verification_verification_url'] : throw new SafePayEmbeddedException("3DS Verification URL is required");
+            $not_enrolled_charge = (isset($order['3ds_not_entrolled_charge']) && $order['3ds_not_entrolled_charge'] != "") ? $order['3ds_not_entrolled_charge'] : 0;
             $mode = "payment";
             $entry_mode = "tms";
         }
@@ -357,7 +359,8 @@ class SafePayEmbeddedClient
                         "order_id" => $order_id,
                         "success_url" => $success_url,
                         "fail_url" => $fail_url,
-                        "verification_url" => $verification_url
+                        "verification_url" => $verification_url,
+                        "not_enrolled_charge" => $not_enrolled_charge
                     );
                 }
             }
@@ -427,6 +430,7 @@ class SafePayEmbeddedClient
             <input type="hidden" id="success_url" name="success_url" value="' . $andaz_3ds_data['success_url'] . '">
             <input type="hidden" id="fail_url" name="fail_url" value="' . $andaz_3ds_data['fail_url'] . '">
             <input type="hidden" id="order_id" name="order_id" value="' . $andaz_3ds_data['order_id'] . '">
+            <input type="hidden" id="non_enrolled" name="non_enrolled" value="' . $andaz_3ds_data['not_enrolled_charge'] . '">
             </form> 
             <script>
                 var three_session_url = \'' . $andaz_3ds_data['verification_url'] . '\';
@@ -460,11 +464,22 @@ class SafePayEmbeddedClient
                 }, false);  
                 var timer = setTimeout(myFunction, 100000);
             </script>';
-        print_r($page_html);
-        exit;
+        return $page_html;
     }
     public function process3DSRequest($request){
         try {
+            $url = parse_url($request['success_url']);
+            if (isset($url['query'])) {
+                $request['success_url'] .= '&tracker=' . urlencode($request['token']) . '&order_id=' . urlencode($request['order_id']);
+            } else {
+                $request['success_url'] .= '?tracker=' . urlencode($request['token']) . '&order_id=' . urlencode($request['order_id']);
+            }
+            $url = parse_url($request['fail_url']);
+            if (isset($url['query'])) {
+                $request['fail_url'] .= '&tracker=' . urlencode($request['token']) . '&order_id=' . urlencode($request['order_id']);
+            } else {
+                $request['fail_url'] .= '?tracker=' . urlencode($request['token']) . '&order_id=' . urlencode($request['order_id']);
+            }
             $authorization = json_decode(json_encode($this->Safepay->order->charge($request['token'], [
                 "payload" => [
                     "authorization" => [
@@ -481,15 +496,42 @@ class SafePayEmbeddedClient
             if(isset($authorization['tracker']['state']) && $authorization['tracker']['state'] == 'TRACKER_ENROLLED') {
                 if(isset($authorization['tracker']['next_actions']['CYBERSOURCE']['kind']) && $authorization['tracker']['next_actions']['CYBERSOURCE']['kind'] == 'AUTHORIZATION') {
                     if(!(isset($authorization['action']['payer_authentication_enrollment']['veres_enrolled'])) || $authorization['action']['payer_authentication_enrollment']['veres_enrolled'] != 'Y') {
-                        return array(
-                            "status" => 2,
-                            "message" => "Card is not 3Ds enrolled",
-                            "tracker" => $request['token'],
-                            "response" => $authorization
-                        );
+                        if($request['non_enrolled'] == 1){
+                            $tracker_order_id = $authorization['tracker']['metadata']['data']['order_id'];
+                            $payment_charge = json_decode(json_encode($this->Safepay->order->charge($request['token'], [
+                                "payload" => [
+                                "authorization" => [
+                                    "do_capture" => true
+                                ]
+                                ]
+                            ])),true);
+                            if(isset($payment_charge['tracker']['state']) && $payment_charge['tracker']['state'] == 'TRACKER_ENDED') {
+                                return array(
+                                    "status" => 1,
+                                    "message" => "Card successfully charged",
+                                    "tracker" => $request['token'],
+                                    "response" => $payment_charge
+                                );
+                            } else {
+                                return array(
+                                    "status" => 0,
+                                    "message" => "There was an error processing your transaction",
+                                    "tracker" => $request['token'],
+                                    "response" => $payment_charge
+                                );
+                            }
+                        } else {
+                            return array(
+                                "status" => 0,
+                                "message" => "Card is not 3Ds enrolled",
+                                "tracker" => $request['token'],
+                                "response" => $authorization
+                            );
+                        }
+                        
                     }
                     $tracker_order_id = $authorization['tracker']['metadata']['data']['order_id'];
-                    $payment_charge = json_decode(json_encode($this->safePayClient->order->charge($_POST['token'], [
+                    $payment_charge = json_decode(json_encode($this->Safepay->order->charge($request['token'], [
                         "payload" => [
                           "authorization" => [
                             "do_capture" => false
@@ -515,10 +557,11 @@ class SafePayEmbeddedClient
                     $tracker_order_id = $authorization['tracker']['metadata']['data']['order_id'];
                     if(isset($authorization['action']['payer_authentication_enrollment']['access_token']) && $authorization['action']['payer_authentication_enrollment']['access_token'] != '') {
                         return array(
-                            "status" => 3,
+                            "status" => 2,
                             "message" => "3DS OTP Required",
                             "tracker" => $request['token'],
-                            "response" => $authorization
+                            "response" => $authorization,
+                            "authentication" => $authorization['action']['payer_authentication_enrollment']
                         );
                     } else {
                         return array(
@@ -541,6 +584,76 @@ class SafePayEmbeddedClient
             return array(
                 "status" => 0,
                 "message" => "There was an error processing 3DS request.",
+                "error" => $e->getError()
+            );
+        }
+    }
+    public function requestOTPCode3DS($andaz_3ds_data){
+        $page_html = '<html lang="en">
+            <style>
+                html, body {
+                    margin: 0;
+                    padding: 0;
+                    height: 100%;
+                }
+                .container {
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+                }
+                iframe {
+                    border: none;
+                    width: 100%;
+                    height: 100%;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                }
+            </style>
+            <body>
+                <div class="container">
+                    <iframe name="step-up-iframe"></iframe>
+                    <form id="step-up-form" target="step-up-iframe" method="post" action="' . $andaz_3ds_data['authentication']['step_up_url'] . '"> 
+                        <input type="hidden" name="JWT" value="' . $andaz_3ds_data['authentication']['access_token'] . '" /> 
+                        <input type="hidden" name="MD" value="{\'test\': \'1\'}"/> 
+                    </form>
+                </div>
+            </body>
+        </html>
+        <script>
+            window.onload = function() {   
+                var stepUpForm = document.querySelector(\'#step-up-form\');
+                if(stepUpForm){
+                    stepUpForm.submit();
+                }
+            }
+        </script>';
+        return $page_html;
+    }
+    public function charge3DS($data)
+    {
+        $tracker = (isset($data['tracker']) && $data['tracker'] != "") ? $data['tracker'] : throw new SafePayEmbeddedException("Trackeris missing");
+        try {
+            $payment_charge = json_decode(json_encode($this->Safepay->order->charge($data['tracker'], new \stdClass())),true);
+            if(isset($payment_charge['tracker']['state']) && $payment_charge['tracker']['state'] == 'TRACKER_ENDED') {
+                return array(
+                    "status" => 1,
+                    "message" => "Card successfully charged",
+                    "tracker" => $data['tracker'],
+                    "response" => $payment_charge
+                );
+            } else {
+                return array(
+                    "status" => 0,
+                    "error" => "There was an error processing your transaction",
+                    "tracker" => $data['tracker'],
+                    "response" => $payment_charge
+                );
+            }
+        } catch (\Exception $e) {
+            return array(
+                "status" => 0,
+                "message" => "There was an error charging customer.",
                 "error" => $e->getError()
             );
         }

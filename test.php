@@ -116,12 +116,13 @@ function chargeCustomer($SafePayEmbeddedAPI){
         //Set to 0 or don't parse for NON 3DS transactions
         $threeDS = 1;
         $data = array(
-            "token" => "cus_dbcd2765-85c6-46dd-b3c4-b933d26db49b",
-            "payment_token" => "pm_8e1d173f-9a5b-45e8-84dd-fed85187ff77",
+            "token" => "cus_0010b01b-5ca9-42d6-aa9f-db94732b563d",
+            "payment_token" => "pm_96d0683d-93b2-4085-a151-acf9289915e9",
             "amount" => 5,
             "3ds_verification_success_url" => "http://localhost/payminion/test.php?3dsresponse=1", //required if 3DS is true
-            "3ds_verification_fail_url" => "http://localhost/payminion/test.php?3dsresponse=1", //required if 3DS is true
+            "3ds_verification_fail_url" => "http://localhost/payminion/test.php?3dsfail=1", //required if 3DS is true
             "3ds_verification_verification_url" => "http://localhost/payminion/test.php?3dsverify=1", //required if 3DS is true
+            "3ds_not_entrolled_charge" => 1, //Optional. Will charge customer even if not enrolled in 3DS
             "order_id" => "12345", // Optional - Defaults to unique ID
             "intent" => "CYBERSOURCE", // Optional - Defaults to value set in intialize stage
             "mode" => "unscheduled_cof", //Optional - Defaults to value set in intialize stage
@@ -130,7 +131,7 @@ function chargeCustomer($SafePayEmbeddedAPI){
         );
         $response = $SafePayEmbeddedAPI->chargeCustomer($data, $threeDS);
         if($response['status'] == 2){
-            initiate3DSSecure($SafePayEmbeddedAPI, $response);
+            echo initiate3DSSecure($SafePayEmbeddedAPI, $response);
             exit;
         }
         return $response;
@@ -153,16 +154,18 @@ function initiate3DSSecure($SafePayEmbeddedAPI, $data){
 function process3DSRequest($SafePayEmbeddedAPI, $data){
     try {
         $response = $SafePayEmbeddedAPI->process3DSRequest($data);
-        print_r($response);
-        exit;
-        if($response['status'] == 2){
-            //Card is not enrolled in 3DS. Reject or Process regularly
-
+        if($response['status'] == 1){
+            //Card Charged Successfully - No OTP requried
+            return $response;
         } else if($response['status'] == 2){
-            //Card is not enrolled in 3DS. Reject or Process regularly
-
+            //3DS OTP required
+            echo $SafePayEmbeddedAPI->requestOTPCode3DS($response);
+            return;
+        } else {
+            //Error
+            return $response;
         }
-        return $response;
+        return;
     } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
@@ -202,6 +205,18 @@ function verifyPaymentSecured($SafePayEmbeddedAPI){
 if(isset($_GET['3dsverify']) && $_GET['3dsverify'] == 1){
     //Verify 3DS
     process3DSRequest($SafePayEmbeddedAPI, $_POST);
+} else if(isset($_GET['3dsresponse']) && $_GET['3dsresponse'] == 1){
+    //Successful 3DS
+    try {
+        $response = $SafePayEmbeddedAPI->charge3DS($_GET);
+        print_r($response);
+        return $response;
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+} else if(isset($_GET['3dsfail']) && $_GET['3dsfail'] == 1){
+    //Verify 3DS
+    print_r($_GET);
 } else {
     // echo json_encode(createCustomer($SafePayEmbeddedAPI));
     // echo json_encode(getCardVaultURL($SafePayEmbeddedAPI));
@@ -216,5 +231,6 @@ if(isset($_GET['3dsverify']) && $_GET['3dsverify'] == 1){
     // echo json_encode(verifyPaymentSecured($SafePayEmbeddedAPI));
 }
 
-
+//pm_8e1d173f-9a5b-45e8-84dd-fed85187ff77 - NO OTP Required
 ?>
+
