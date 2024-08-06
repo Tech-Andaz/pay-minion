@@ -15,6 +15,7 @@ class SafePayEmbeddedClient
     private $source;
     private $is_implicit;
     private $vault_source;
+    private $three_ds_url;
 
 
     /**
@@ -27,6 +28,7 @@ class SafePayEmbeddedClient
         //TEST = sandbox
         $this->environment = (isset($config['environment']) && in_array($config['environment'], ['sandbox','development','production'])) ? $config['environment'] : "production";
         $this->api_url = ($this->environment == 'production') ? "https://api.getsafepay.com" : (($this->environment == 'development') ? "https://dev.api.getsafepay.com" : "https://sandbox.api.getsafepay.com");
+        $this->three_ds_url = ($this->environment == 'production') ? "https://centinelapi.cardinalcommerce.com" : (($this->environment == 'development') ? "https://centinelapistag.cardinalcommerce.com" : "https://centinelapistag.cardinalcommerce.com");
         $this->card_vault_url = ($this->environment == 'production') ? "https://getsafepay.com" : (($this->environment == 'development') ? "https://dev.api.getsafepay.com" : "https://sandbox.api.getsafepay.com");
         $this->api_key = (isset($config['api_key']) && $config['api_key'] != "") ? $config['api_key'] : throw new SafePayEmbeddedException("API Key is missing");
         $this->public_key = (isset($config['public_key']) && $config['public_key'] != "") ? $config['public_key'] : throw new SafePayEmbeddedException("Public Key is missing");
@@ -287,7 +289,7 @@ class SafePayEmbeddedClient
     * SafePayEmbedded Charge Customer.
     * @param array $config.
     */
-    public function chargeCustomer($order)
+    public function chargeCustomer($order, $threeDS = 0)
     {
         if(!is_array($order)){
             throw new SafePayEmbeddedException("Data must be an associative array");
@@ -303,12 +305,26 @@ class SafePayEmbeddedClient
         $mode = (isset($order['mode']) && $order['mode'] != "") ? $order['mode'] : $this->mode;
         $currency = (isset($order['currency']) && $order['currency'] != "") ? $order['currency'] : $this->currency;
         $source = (isset($order['source']) && $order['source'] != "") ? $order['source'] : $this->source;
+        $threeDS = (isset($threeDS) && in_array($threeDS, [1,0])) ? $threeDS : 0;
+        $entry_mode = "";
+        $success_url = "";
+        $fail_url = "";
+        $verification_url = "";
+
+        if($threeDS == 1){
+            $success_url = (isset($order['3ds_verification_success_url']) && $order['3ds_verification_success_url'] != "") ? $order['3ds_verification_success_url'] : throw new SafePayEmbeddedException("3DS Success URL is required");
+            $fail_url = (isset($order['3ds_verification_fail_url']) && $order['3ds_verification_fail_url'] != "") ? $order['3ds_verification_fail_url'] : throw new SafePayEmbeddedException("3DS Failure URL is required");
+            $verification_url = (isset($order['3ds_verification_verification_url']) && $order['3ds_verification_verification_url'] != "") ? $order['3ds_verification_verification_url'] : throw new SafePayEmbeddedException("3DS Verification URL is required");
+            $mode = "payment";
+            $entry_mode = "tms";
+        }
         try {
             $session = $this->Safepay->order->setup([
                 "user" => $token,
                 "merchant_api_key" => $this->public_key,
                 "intent" => $intent,
                 "mode" => $mode,
+                "entry_mode" => $entry_mode,
                 "currency" => $currency,
                 "amount" => (float)$amount * 100
             ]);
@@ -328,6 +344,23 @@ class SafePayEmbeddedClient
                     ],
                 ]
             ])),true);
+            if($threeDS == 1){
+                if(isset($tracker['action']['payer_authentication_setup']['access_token']) && $tracker['action']['payer_authentication_setup']['access_token'] != '') {
+                    $access_token = $tracker['action']['payer_authentication_setup']['access_token'];
+                    $device_data_collection_url = $tracker['action']['payer_authentication_setup']['device_data_collection_url'];
+                    return array(
+                        "status" => 2,
+                        "text" => "3DS Verification Required",
+                        "access_token" => $access_token,
+                        "device_data_collection_url" => $device_data_collection_url,
+                        "token" => $tracking_token, 
+                        "order_id" => $order_id,
+                        "success_url" => $success_url,
+                        "fail_url" => $fail_url,
+                        "verification_url" => $verification_url
+                    );
+                }
+            }
             if(isset($tracker['tracker']) && isset($tracker['tracker']['state']) && $tracker['tracker']['state'] == 'TRACKER_ENDED') {
                 return array(
                     "status" => 1,
@@ -350,12 +383,175 @@ class SafePayEmbeddedClient
     }
 
     
+    public function initiate3DSSecure($andaz_3ds_data){
+        $page_html = '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+            <style>
+                .loader-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: grey;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 999;
+                }
+                .loader {
+                    border: 8px solid #f3f3f3;
+                    border-top: 8px solid #02B6B0;
+                    border-radius: 50%;
+                    width: 50px;
+                    height: 50px;
+                    animation: spin 1s linear infinite;
+                }
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                .content {
+                padding: 20px;
+                }
+            </style>
+            <div class="loader-overlay" id="loaderOverlay">
+                <div class="loader"></div>
+            </div>
+            <iframe id="cardinal_collection_iframe" name="collectionIframe" height="10" width="10" style="display: none;"></iframe>
+            <form id="cardinal_collection_form" method="POST" target="collectionIframe" action="' . $andaz_3ds_data['device_data_collection_url'] . '">
+            <input id="cardinal_collection_form_input" type="hidden" name="JWT" value="' . $andaz_3ds_data['access_token'] . '">
+            </form>
+            <form id="session_verifications" method="POST" action="' . $andaz_3ds_data['verification_url'] . '">
+            <input type="hidden" id="SessionId_tracker" name="SessionId" value="">
+            <input type="hidden" id="token" name="token" value="' . $andaz_3ds_data['token'] . '">
+            <input type="hidden" id="success_url" name="success_url" value="' . $andaz_3ds_data['success_url'] . '">
+            <input type="hidden" id="fail_url" name="fail_url" value="' . $andaz_3ds_data['fail_url'] . '">
+            <input type="hidden" id="order_id" name="order_id" value="' . $andaz_3ds_data['order_id'] . '">
+            </form> 
+            <script>
+                var three_session_url = \'' . $andaz_3ds_data['verification_url'] . '\';
+                var timerExpired = false;
+                function myFunction() {
+                    if (!timerExpired) {
+                        window.location.href = \'' . $andaz_3ds_data['fail_url'] . '?status=0&message="3DS Payment request timed out"\';
+                    }
+                }
+                window.onload = function() { 
+                var cardinalCollectionForm = document.querySelector(\'#cardinal_collection_form\'); 
+                if(cardinalCollectionForm) 
+                    cardinalCollectionForm.submit();
+                }
+                window.addEventListener("message", function(event) {
+                    if(event.origin === "' . $this->three_ds_url . '") {
+                        var receive_data = JSON.parse(event.data);
+                        if(receive_data.Status == true && receive_data.MessageType == \'profile.completed\') {
+                            var SessionId = receive_data.SessionId;   
+                            $("#SessionId_tracker").val(SessionId);
+                            var sessionVerificationForm = document.querySelector(\'#session_verifications\'); 
+                            if(sessionVerificationForm) {
+                                sessionVerificationForm.submit();
+                            }
+                            clearTimeout(timer);
+                            timerExpired = true;      
+                        } else {
+                            window.location.href = \'' . $andaz_3ds_data['fail_url'] . '?status=0&message="3DS Payment invalid session ID"\';
+                        }
+                    }
+                }, false);  
+                var timer = setTimeout(myFunction, 100000);
+            </script>';
+        print_r($page_html);
+        exit;
+    }
+    public function process3DSRequest($request){
+        try {
+            $authorization = json_decode(json_encode($this->Safepay->order->charge($request['token'], [
+                "payload" => [
+                    "authorization" => [
+                        "do_capture" => false
+                    ],
+                    "authentication_setup" => [
+                        "success_url" => $request['success_url'],
+                        "failure_url" => $request['fail_url'],
+                        "device_fingerprint_session_id" => $request['SessionId']
+                    ]
+                ]
+            ])),true);
+            
+            if(isset($authorization['tracker']['state']) && $authorization['tracker']['state'] == 'TRACKER_ENROLLED') {
+                if(isset($authorization['tracker']['next_actions']['CYBERSOURCE']['kind']) && $authorization['tracker']['next_actions']['CYBERSOURCE']['kind'] == 'AUTHORIZATION') {
+                    if(!(isset($authorization['action']['payer_authentication_enrollment']['veres_enrolled'])) || $authorization['action']['payer_authentication_enrollment']['veres_enrolled'] != 'Y') {
+                        return array(
+                            "status" => 2,
+                            "message" => "Card is not 3Ds enrolled",
+                            "tracker" => $request['token'],
+                            "response" => $authorization
+                        );
+                    }
+                    $tracker_order_id = $authorization['tracker']['metadata']['data']['order_id'];
+                    $payment_charge = json_decode(json_encode($this->safePayClient->order->charge($_POST['token'], [
+                        "payload" => [
+                          "authorization" => [
+                            "do_capture" => false
+                          ]
+                        ]
+                    ])),true);
+                    if(isset($payment_charge['tracker']['state']) && $payment_charge['tracker']['state'] == 'TRACKER_ENDED') {
+                        return array(
+                            "status" => 1,
+                            "message" => "Card successfully charged",
+                            "tracker" => $request['token'],
+                            "response" => $payment_charge
+                        );
+                    } else {
+                        return array(
+                            "status" => 0,
+                            "message" => "There was an error processing your transaction",
+                            "tracker" => $request['token'],
+                            "response" => $payment_charge
+                        );
+                    }
+                } else if(isset($authorization['tracker']['next_actions']['CYBERSOURCE']['kind']) && $authorization['tracker']['next_actions']['CYBERSOURCE']['kind'] == 'PAYER_AUTH_VALIDATION') {
+                    $tracker_order_id = $authorization['tracker']['metadata']['data']['order_id'];
+                    if(isset($authorization['action']['payer_authentication_enrollment']['access_token']) && $authorization['action']['payer_authentication_enrollment']['access_token'] != '') {
+                        return array(
+                            "status" => 3,
+                            "message" => "3DS OTP Required",
+                            "tracker" => $request['token'],
+                            "response" => $authorization
+                        );
+                    } else {
+                        return array(
+                            "status" => 0,
+                            "message" => "There was an error processing your transaction",
+                            "tracker" => $request['token'],
+                            "response" => $authorization
+                        );
+                    }
+                } else {
+                    return array(
+                        "status" => 0,
+                        "message" => "There was an error processing your transaction",
+                        "tracker" => $request['token'],
+                        "response" => $authorization
+                    );
+                }
+            }
+        } catch (\Exception $e) {
+            return array(
+                "status" => 0,
+                "message" => "There was an error processing 3DS request.",
+                "error" => $e->getError()
+            );
+        }
+    }
+
+    
     /**
     * SafePayEmbedded Charge Customer.
     * @param array $config.
     */
-    public function getCardVaultURL($customer_token = "", $type = "redirect")
-    {
+    public function getCardVaultURL($customer_token = "", $type = "redirect"){
         $token = (isset($customer_token) && $customer_token != "") ? $customer_token : throw new SafePayEmbeddedException("Customer Token is missing");
         try {
             $session = $this->Safepay->order->setup([
@@ -392,6 +588,7 @@ class SafePayEmbeddedClient
             );
         }
     }
+    
 
     /**
     * SafePayEmbedded Verify Payment.
@@ -441,8 +638,7 @@ class SafePayEmbeddedClient
     * SafePayEmbedded Secured Verify Payment.
     * @param array $config.
     */
-    public function verifyPaymentSecured()
-    {
+    public function verifyPaymentSecured(){
         if($this->webhook_key == ""){
             throw new SafePayEmbeddedException("Webhook Key not set during initialization");
         }

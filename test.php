@@ -2,126 +2,219 @@
 
 require 'vendor/autoload.php';
 
-use TechAndaz\JazzCash\JazzCashClient;
-use TechAndaz\JazzCash\JazzCashAPI;
+use TechAndaz\SafePayEmbedded\SafePayEmbeddedClient;
+use TechAndaz\SafePayEmbedded\SafePayEmbeddedAPI;
 
-$JazzCashClient = new JazzCashClient(array(
-    "environment" => "sandbox", // Optional - Defaults to production. Options are: sandbox / production
-    "merchant_id" => "MC108944",
-    "password" => "5990v09a6d",
-    "integerity_salt" => "zx82t8029e",
-    "domain_code" => "TA", //max 3 character code to be appended for all Transaction Reference numbers 
-    "return_url" => "https://techandaz.com/success",
+$SafePayEmbeddedClient = new SafePayEmbeddedClient(array(
+    "environment" =>"sandbox", // Optional - Defaults to production. Options are: sandbox / production
+    "api_key" => "d11bf1408f381b8048d23d57bf628924b63e58f57fd4f72e622fa8623382a9aa",
+    "public_key" =>  "sec_14243867-4988-424b-a2f8-d138d38deb3e",
+    "webhook_key" =>  "175f26b3c3fd27f4f18ac1048d9721794e1934481d83dd010e083590c4decc3e",
+    "intent" => "CYBERSOURCE", // Optional - Defaults to CYBERSOURCE
+    "mode" => "unscheduled_cof", // Optional - Defaults to unscheduled_cof
+    "currency" => "PKR", // Optional - Defaults to PKR
+    "source" => "My App", // Optional - Defaults to Pay Minion
 ));
+$SafePayEmbeddedAPI = new SafePayEmbeddedAPI($SafePayEmbeddedClient);
 
-$JazzCashAPI = new JazzCashAPI($JazzCashClient);
+//Create Customer
+function createCustomer($SafePayEmbeddedAPI){
+    try {
+        $data = array(
+            "first_name" => "Tech",
+            "last_name" => "Andaz",
+            "email" => "contact@techandaz.com",
+            "phone_number" => "+924235113700",
+            "country" => "PK",
+            "is_guest" => true // Optioanl - Defaults to false. Options are: true / false
+        );
+        $response = $SafePayEmbeddedAPI->createCustomer($data);
+        return $response;
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
 
-//Create Checkout Link
-function createCheckoutLink($JazzCashAPI){
+//Update Customer
+function updateCustomer($SafePayEmbeddedAPI){
     try {
         $data = array(
-            "amount" => 25.30,
-            "bill_reference" =>  "billRef",
-            "transaction_reference" => "", // Optional - max 17 character length - domain_code will be added in the beggining - leave empty for auto generated
-            "description" => "description",
-            "date_time" => date("YmdHis"), // Optional - will use current time if not provided
-            "order_id" => "", // Optional - Will generate unique ID if not provided
-            "metafield_1" => "", //Optional Metadata for order
-            "metafield_2" => "", //Optional Metadata for order
-            "metafield_3" => "", //Optional Metadata for order
-            "metafield_4" => "", //Optional Metadata for order
-            "metafield_5" => "", //Optional Metadata for order
+            "token" => "cus_6d5f1748-1961-4bea-86e7-c19b0223f07d",
+            "first_name" => "Tech",
+            "last_name" => "Andaz",
+            "email" => "contact@techandaz.com",
+            "phone_number" => "+924235113700",
+            "country" => "PK"
         );
-        $response_type = "redirect"; // redirect / form - Defaults to redirect, Redirect will automatically redirect user to payment page, form will return html form with fields and values
-        $response = $JazzCashAPI->createCheckoutLink($data, $response_type);
+        $response = $SafePayEmbeddedAPI->updateCustomer($data);
         return $response;
-    } catch (TechAndaz\JazzCash\JazzCashException $e) {
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-//Process Response
-function processResponse($JazzCashAPI){
+
+//Retrive Customer
+function retrieveCustomer($SafePayEmbeddedAPI){
     try {
-        $response = $JazzCashAPI->processResponse();
+        $token = "cus_46f52953-a2fa-48b7-beaf-d3449ba860eb";
+        $response = $SafePayEmbeddedAPI->retrieveCustomer($token);
         return $response;
-    } catch (TechAndaz\JazzCash\JazzCashException $e) {
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-//Mobile Account Linking TOKENIZATION
-function mobileAccountLinking($JazzCashAPI){
+
+//Delete Customer
+function deleteCustomer($SafePayEmbeddedAPI){
     try {
+        $token = "cus_46f52953-a2fa-48b7-beaf-d3449ba860eb";
+        $response = $SafePayEmbeddedAPI->deleteCustomer($token);
+        return $response;
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
+
+//Get All Payment Methods
+function getAllPaymentMethods($SafePayEmbeddedAPI){
+    try {
+        $token = "cus_dbcd2765-85c6-46dd-b3c4-b933d26db49b";
+        $response = $SafePayEmbeddedAPI->getAllPaymentMethods($token);
+        return $response;
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
+
+//Get Payment Method
+function getPaymentMethod($SafePayEmbeddedAPI){
+    try {
+        $token = "cus_6d5f1748-1961-4bea-86e7-c19b0223f07d";
+        $payment_token = "cus_6d5f1748-1961-4bea-86e7-c19b0223f07d";
+        $response = $SafePayEmbeddedAPI->getPaymentMethod($token, $payment_token);
+        return $response;
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
+
+//Delete Payment Method
+function deletePaymentMethod($SafePayEmbeddedAPI){
+    try {
+        $token = "cus_6d5f1748-1961-4bea-86e7-c19b0223f07d";
+        $payment_token = "cus_6d5f1748-1961-4bea-86e7-c19b0223f07d";
+        $response = $SafePayEmbeddedAPI->deletePaymentMethod($token, $payment_token);
+        return $response;
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
+
+//Charge Customer
+function chargeCustomer($SafePayEmbeddedAPI){
+    try {
+        //Set to 0 or don't parse for NON 3DS transactions
+        $threeDS = 1;
         $data = array(
-            "account_number" => "03231231234",
+            "token" => "cus_dbcd2765-85c6-46dd-b3c4-b933d26db49b",
+            "payment_token" => "pm_8e1d173f-9a5b-45e8-84dd-fed85187ff77",
+            "amount" => 5,
+            "3ds_verification_success_url" => "http://localhost/payminion/test.php?3dsresponse=1", //required if 3DS is true
+            "3ds_verification_fail_url" => "http://localhost/payminion/test.php?3dsresponse=1", //required if 3DS is true
+            "3ds_verification_verification_url" => "http://localhost/payminion/test.php?3dsverify=1", //required if 3DS is true
+            "order_id" => "12345", // Optional - Defaults to unique ID
+            "intent" => "CYBERSOURCE", // Optional - Defaults to value set in intialize stage
+            "mode" => "unscheduled_cof", //Optional - Defaults to value set in intialize stage
+            "currency" => "PKR", //Optional - Defaults to value set in intialize stage
+            "source" => "Pay Minion" //Optional - Defaults to value set in intialize stage
         );
-        $response_type = "redirect"; // redirect / form - Defaults to redirect, Redirect will automatically redirect user to payment page, form will return html form with fields and values
-        $response = $JazzCashAPI->mobileAccountLinking($data, $response_type);
+        $response = $SafePayEmbeddedAPI->chargeCustomer($data, $threeDS);
+        if($response['status'] == 2){
+            initiate3DSSecure($SafePayEmbeddedAPI, $response);
+            exit;
+        }
         return $response;
-    } catch (TechAndaz\JazzCash\JazzCashException $e) {
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-//Mobile Account Transaction TOKENIZATION
-function linkedMobileAccountTransaction($JazzCashAPI){
+
+//Initiate 3DS
+function initiate3DSSecure($SafePayEmbeddedAPI, $data){
     try {
-        $data = array(
-            "amount" => 25.30,
-            "payment_token" => "KfJ2kwqr3EjDWayU8mWOSZgMH3HdL3L7",
-            "bill_reference" =>  "billRef",
-            "transaction_reference" => "", // Optional - max 17 character length - domain_code will be added in the beggining - leave empty for auto generated
-            "description" => "description",
-            "date_time" => date("YmdHis"), // Optional - will use current time if not provided
-            "order_id" => "", // Optional - Will generate unique ID if not provided
-            "metafield_1" => "", //Optional Metadata for order
-            "metafield_2" => "", //Optional Metadata for order
-            "metafield_3" => "", //Optional Metadata for order
-            "metafield_4" => "", //Optional Metadata for order
-            "metafield_5" => "", //Optional Metadata for order
-        );
-        $response = $JazzCashAPI->linkedMobileAccountTransaction($data);
+        $response = $SafePayEmbeddedAPI->initiate3DSSecure($data);
         return $response;
-    } catch (TechAndaz\JazzCash\JazzCashException $e) {
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-//Transaction Status
-function transactionStatus($JazzCashAPI){
+
+//Verify 3DS
+function process3DSRequest($SafePayEmbeddedAPI, $data){
     try {
-        $transaction_reference = "TA2024072313263799";
-        $response = $JazzCashAPI->transactionStatus($transaction_reference);
+        $response = $SafePayEmbeddedAPI->process3DSRequest($data);
+        print_r($response);
+        exit;
+        if($response['status'] == 2){
+            //Card is not enrolled in 3DS. Reject or Process regularly
+
+        } else if($response['status'] == 2){
+            //Card is not enrolled in 3DS. Reject or Process regularly
+
+        }
         return $response;
-    } catch (TechAndaz\JazzCash\JazzCashException $e) {
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-//Card Transaction Refund
-function refundCardTransaction($JazzCashAPI){
+
+//Charge Customer
+function getCardVaultURL($SafePayEmbeddedAPI){
     try {
-        $transaction_reference = "TREF2022051812564132";
-        $amount = 100;
-        $response = $JazzCashAPI->refundCardTransaction($transaction_reference, $amount);
+        $response = $SafePayEmbeddedAPI->getCardVaultURL("cus_dbcd2765-85c6-46dd-b3c4-b933d26db49b");
         return $response;
-    } catch (TechAndaz\JazzCash\JazzCashException $e) {
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-//Wallet Transaction Refund
-function refundWalletTransaction($JazzCashAPI){
+
+
+//Verify Payment Webhook
+function verifyPayment($SafePayEmbeddedAPI){
     try {
-        $transaction_reference = "T20220518150213";
-        $amount = 100;
-        $mpin = "1234";
-        $response = $JazzCashAPI->refundWalletTransaction($transaction_reference, $amount, $mpin);
+        $response = $SafePayEmbeddedAPI->verifyPayment();
         return $response;
-    } catch (TechAndaz\JazzCash\JazzCashException $e) {
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-// echo json_encode(createCheckoutLink($JazzCashAPI));
-// echo json_encode(processResponse($JazzCashAPI));
-// echo (mobileAccountLinking($JazzCashAPI));
-// echo json_encode(linkedMobileAccountTransaction($JazzCashAPI));
-echo json_encode(transactionStatus($JazzCashAPI));
-// echo json_encode(refundCardTransaction($JazzCashAPI));
-// echo json_encode(refundWalletTransaction($JazzCashAPI));
+
+//Verify Payment Webhook
+function verifyPaymentSecured($SafePayEmbeddedAPI){
+    try {
+        $response = $SafePayEmbeddedAPI->verifyPaymentSecured();
+        return $response;
+    } catch (TechAndaz\SafePayEmbedded\SafePayEmbeddedException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
+
+if(isset($_GET['3dsverify']) && $_GET['3dsverify'] == 1){
+    //Verify 3DS
+    process3DSRequest($SafePayEmbeddedAPI, $_POST);
+} else {
+    // echo json_encode(createCustomer($SafePayEmbeddedAPI));
+    // echo json_encode(getCardVaultURL($SafePayEmbeddedAPI));
+    // echo json_encode(updateCustomer($SafePayEmbeddedAPI));
+    // echo json_encode(retrieveCustomer($SafePayEmbeddedAPI));
+    // echo json_encode(deleteCustomer($SafePayEmbeddedAPI));
+    // echo json_encode(getAllPaymentMethods($SafePayEmbeddedAPI));
+    // echo json_encode(getPaymentMethod($SafePayEmbeddedAPI));
+    // echo json_encode(deletePaymentMethod($SafePayEmbeddedAPI));
+    echo json_encode(chargeCustomer($SafePayEmbeddedAPI));
+    // echo json_encode(verifyPayment($SafePayEmbeddedAPI));
+    // echo json_encode(verifyPaymentSecured($SafePayEmbeddedAPI));
+}
+
+
 ?>

@@ -106,9 +106,18 @@ class SafePayEmbeddedAPI
     * @return array
     *   Decoded response data.
     */
-    public function chargeCustomer($data)
+    public function chargeCustomer($data, $threeDS = 0)
     {
-        return $this->SafePayEmbeddedClient->chargeCustomer($data);
+        return $this->SafePayEmbeddedClient->chargeCustomer($data, $threeDS);
+    }
+    
+    public function initiate3DSSecure($data)
+    {
+        return $this->SafePayEmbeddedClient->initiate3DSSecure($data);
+    }
+    public function process3DSRequest($data)
+    {
+        return $this->SafePayEmbeddedClient->process3DSRequest($data);
     }
     
     /**
