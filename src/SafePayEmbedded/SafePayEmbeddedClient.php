@@ -631,7 +631,7 @@ class SafePayEmbeddedClient
     }
     public function charge3DS($data)
     {
-        $tracker = (isset($data['tracker']) && $data['tracker'] != "") ? $data['tracker'] : throw new SafePayEmbeddedException("Trackeris missing");
+        $tracker = (isset($data['tracker']) && $data['tracker'] != "") ? $data['tracker'] : throw new SafePayEmbeddedException("Tracker is missing");
         try {
             $payment_charge = json_decode(json_encode($this->Safepay->order->charge($data['tracker'], new \stdClass())),true);
             if(isset($payment_charge['tracker']['state']) && $payment_charge['tracker']['state'] == 'TRACKER_ENDED') {

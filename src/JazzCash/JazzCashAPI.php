@@ -255,6 +255,7 @@ class JazzCashAPI
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->JazzCashClient->api_url .  $this->JazzCashClient->wallet_transaction_url);
         curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
@@ -292,6 +293,7 @@ class JazzCashAPI
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->JazzCashClient->api_url .  $this->JazzCashClient->transaction_status_url);
         curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
@@ -340,6 +342,7 @@ class JazzCashAPI
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->JazzCashClient->api_url .  $this->JazzCashClient->card_refund_url);
         curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
@@ -393,6 +396,7 @@ class JazzCashAPI
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->JazzCashClient->api_url .  $this->JazzCashClient->wallet_refund_url);
         curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
