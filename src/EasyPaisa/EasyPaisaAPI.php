@@ -144,17 +144,15 @@ class EasyPaisaAPI
             return $form;
         }
     }
-    public function verifyTransaction($orderID){
+    public function transactionStatus($orderID){
         $endpoint = 'easypay-service/rest/v4/inquire-transaction';
         $method = 'POST';
         $requestData = [
             'orderId' => "12345",
-            'storeId' => $this->EasyPaisaClient->store_id,
+            'storeId' => $this->EasyPaisaClient->store_id . 1,
             'accountNum' => $this->EasyPaisaClient->ewp_account_number,
         ];
         $payload = $this->EasyPaisaClient->makeRequest($endpoint, $method, $requestData);
-        echo "REE";
-        print_r($payload);
-        exit;
+        return $payload;
     }
 }

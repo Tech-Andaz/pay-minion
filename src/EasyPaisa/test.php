@@ -87,7 +87,7 @@ function createHostedCheckout($EasyPaisaAPI){
 //Link Mobile Wallet
 function verifyTransaction($EasyPaisaAPI){
     try {
-        $response = $EasyPaisaAPI->verifyTransaction(12345);
+        $response = $EasyPaisaAPI->transactionStatus(12345);
         return $response;
     } catch (TechAndaz\EasyPaisa\EasyPaisaException $e) {
         echo "Error: " . $e->getMessage() . "\n";
