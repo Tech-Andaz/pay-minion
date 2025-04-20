@@ -149,7 +149,7 @@ class EasyPaisaAPI
         $method = 'POST';
         $requestData = [
             'orderId' => "12345",
-            'storeId' => $this->EasyPaisaClient->store_id . 1,
+            'storeId' => $this->EasyPaisaClient->store_id,
             'accountNum' => $this->EasyPaisaClient->ewp_account_number,
         ];
         $payload = $this->EasyPaisaClient->makeRequest($endpoint, $method, $requestData);
