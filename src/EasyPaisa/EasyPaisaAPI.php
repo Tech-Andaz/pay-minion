@@ -144,138 +144,17 @@ class EasyPaisaAPI
             return $form;
         }
     }
-    public function linkMobileWallet($data){
-        if((!isset($data['mobileAccountNo']) || $data['mobileAccountNo'] == "")){
-            throw new EasyPaisaException("Mobile Account Number is missing.");
-        }
-        if($this->EasyPaisaClient->private_key == ""){
-            throw new EasyPaisaException("Private Key is missing.");
-        }
-
-        $transaction_data = json_encode([
-            'storeId' => $this->EasyPaisaClient->store_id,
-            'mobileAccountNo' => $data['mobileAccountNo']
-        ]);
-        openssl_sign($transaction_data, $signature, $this->EasyPaisaClient->private_key, OPENSSL_ALGO_SHA256);
-        $base64Signature = base64_encode($signature);
-
-        $url = $this->EasyPaisaClient->api_url . "easypay-service/rest/pinless/v1.0/generate-otp";
-        $credentials = base64_encode($this->EasyPaisaClient->username . ":" . $this->EasyPaisaClient->password);
-
-        $headers = [
-            "Content-Type: application/json",
-            "Credentials: $credentials"
-        ];
+    public function verifyTransaction($orderID){
+        $endpoint = 'easypay-service/rest/v4/inquire-transaction';
+        $method = 'POST';
         $requestData = [
-            'request' => [
-                'storeId' => $this->EasyPaisaClient->store_id,
-                'mobileAccountNo' => $data['mobileAccountNo'],
-            ],
-            'signature' => $base64Signature
+            'orderId' => "12345",
+            'storeId' => $this->EasyPaisaClient->store_id,
+            'accountNum' => $this->EasyPaisaClient->ewp_account_number,
         ];
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestData));
-        $response = curl_exec($ch);
-        if (curl_errno($ch)) {
-            return array(
-                "status" => 0,
-                "responseCode" => 0,
-                "error" => curl_error($ch)
-            );
-        }
-        curl_close($ch);
-        $response = json_decode($response,true)['response'];
-        if($response['responseCode'] != "0000"){
-            return array(
-                "status" => 0,
-                "responseCode" => $response['responseCode'],
-                "error" => $response['responseDesc'],
-            );
-        }
-
-
+        $payload = $this->EasyPaisaClient->makeRequest($endpoint, $method, $requestData);
+        echo "REE";
+        print_r($payload);
         exit;
-
-        $currentDate = new \DateTime();
-        $currentDate->modify('+2 day');
-        $expiryDate = $currentDate->format('Ymd His');
-        
-        $data = array(
-            "amount" => number_format($order['amount'],2),
-            "autoRedirect" => 1,
-            "bankIdentifier" => (isset($order['bank_id']) && $order['bank_id'] != "") ? $order['bank_id'] : "",
-            "emailAddr" => (isset($order['email']) && $order['email'] != "") ? $order['email'] : "",
-            "expiryDate" => (isset($order['expiry_datetime']) && $order['expiry_datetime'] != "") ? $order['expiry_datetime'] : $expiryDate,
-            "mobileNum" => (isset($order['phone']) && $order['phone'] != "") ? $order['phone'] : "",
-            "orderRefNum" => (isset($order['order_id']) && $order['order_id'] != "") ? $order['order_id'] : uniqid(),
-            "paymentMethod" => (isset($order['payment_method']) && in_array($order['payment_method'], ["OTC_PAYMENT_METHOD","MA_PAYMENT_METHOD","CC_PAYMENT_METHOD","QR_PAYMENT_METHOD","DD_PAYMENT_METHOD"])) ? $order['payment_method'] : "",
-            "postBackURL" => (isset($order['return_url']) && $order['return_url'] != "") ? $order['return_url'] : $this->EasyPaisaClient->return_url,
-            "storeId" => $this->EasyPaisaClient->store_id,
-        );
-        $filteredData = array_filter($data, function($value) {
-            return !empty($value);
-        });
-        $mapString = '';
-		foreach ($filteredData as $key => $val) {
-			$mapString .=  $key.'='.$val.'&';
-		}
-		$url_string  = substr($mapString , 0, -1);
-        $crypttext = openssl_encrypt($url_string, "aes-128-ecb", $this->EasyPaisaClient->hash_key, OPENSSL_RAW_DATA);
-        $encrypted_hash = base64_encode($crypttext);
-        $data['merchantHashedReq'] = $encrypted_hash;
-
-        if($response_type == "form"){
-            return $this->generateForm($data);
-        } else if($response_type == "redirect"){
-            $form = $this->generateForm($data);
-            $form .= '<script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    document.getElementById("payment_form_easypay").submit();
-                });
-            </script>';
-            return $form;
-        } else if($response_type == "follow"){
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $this->EasyPaisaClient->api_url . 'easypay/Index.jsf');
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-            curl_setopt($ch, CURLOPT_TIMEOUT, 90);
-            $response = curl_exec($ch);
-            if (curl_errno($ch)) {
-                $return_data = array(
-                    "status" => 0,
-                    "error" => curl_error($ch)
-                );
-            } else {
-                $redirected_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-                $parsedUrl  = parse_url($redirected_url);
-                $queryString = isset($parsedUrl['query']) ? $parsedUrl['query'] : '';
-                parse_str($queryString, $queryParams);
-                if(isset($queryParams['auth_token']) && $queryParams['auth_token'] != ""){
-                    $return_data = array(
-                        "status" => 1,
-                        "auth_token" => $queryParams['auth_token']
-                    );
-                } else {
-                    $return_data = array(
-                        "status" => 0,
-                        "error" => "Unable to get Auth Token",
-                        "data" => $response
-                    );
-                }
-            }
-            curl_close($ch);
-            return $return_data;
-        } else {
-            return array(
-                "status" => 0,
-                "error" => "Unknown Response Type"
-            );
-        }
     }
 }

@@ -7,11 +7,10 @@ class EasyPaisaClient
     public $api_url;
     public $store_id;
     public $currency;
-    public $hash_key;
     public $return_url;
-    public $private_key;
     public $username;
     public $password;
+    public $ewp_account_number;
 
     /**
     * EasyPaisaClient constructor.
@@ -25,10 +24,9 @@ class EasyPaisaClient
         $this->environment = (isset($config['environment']) && in_array($config['environment'], ['sandbox','production'])) ? $config['environment'] : "production";
         $this->api_url = ($this->environment == 'production') ? "https://easypay.easypaisa.com.pk/" : "https://easypaystg.easypaisa.com.pk/";
         $this->store_id = (isset($config['store_id']) && $config['store_id'] != "") ? $config['store_id'] : throw new EasyPaisaException("Store ID is missing");
-        $this->hash_key = (isset($config['hash_key']) && $config['hash_key'] != "") ? $config['hash_key'] : throw new EasyPaisaException("Hash Key is missing");
+        $this->ewp_account_number = (isset($config['ewp_account_number']) && $config['ewp_account_number'] != "") ? $config['ewp_account_number'] : throw new EasyPaisaException("EWP Account Number is missing");
         $this->return_url = (isset($config['return_url']) && $config['return_url'] != "") ? $config['return_url'] : "";
         $this->currency = (isset($config['currency']) && $config['currency'] != "") ? $config['currency'] : "PKR";
-        $this->private_key = (isset($config['private_key']) && $config['private_key'] != "") ? file_get_contents($config['private_key']) : "";
         $this->username = (isset($config['username']) && $config['username'] != "") ? $config['username'] : "";
         $this->password = (isset($config['password']) && $config['password'] != "") ? $config['password'] : "";
     }
@@ -44,7 +42,11 @@ class EasyPaisaClient
     public function makeRequest($endpoint, $method = 'GET', $data = [], $queryParams = [])
     {
         $url = rtrim($this->api_url, "/") . '/' . ltrim($endpoint, '/');
-        $headers = ["Content-Type: application/json"];
+        $credentials = base64_encode($this->username . ":" . $this->password);
+        $headers = [
+            "Content-Type: application/json",
+            "Credentials: $credentials"
+        ];
         $response = $this->sendRequest($url, $method, $headers, $data, $queryParams);
         $responseData = json_decode($response, true);
         return $responseData;
