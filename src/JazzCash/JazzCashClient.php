@@ -58,6 +58,7 @@ class JazzCashClient
         $this->transaction_status_url = "ApplicationAPI/API/PaymentInquiry/Inquire";
         $this->card_refund_url = "ApplicationAPI/API/authorize/Refund";
         $this->wallet_refund_url = "ApplicationAPI/API/Purchase/domwalletrefundtransaction";
+        $this->wallet_cnic_transaction_url = "ApplicationAPI/API/2.0/Purchase/DoMWalletTransaction";
     }
 
     /**
