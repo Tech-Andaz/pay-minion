@@ -122,8 +122,8 @@ function refundWalletTransaction($JazzCashAPI){
 function walletTransactionCNIC($JazzCashAPI){
     try {
         $data = array(
-            "account_number" => "", //Customers Account Number
-            "cnic" => "", //Customers CNIC Number
+            "account_number" => "03028461997", //Customers Account Number
+            "cnic" => "880215", //Customers CNIC Number
             "amount" => 2,
             "bill_reference" =>  "billRef",
             "transaction_reference" => "", // Optional - max 17 character length - domain_code will be added in the beggining - leave empty for auto generated

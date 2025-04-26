@@ -25,6 +25,7 @@ class JazzCashClient
     public $transaction_type;
     public $version;
     public $sub_merchant_id;
+    public $wallet_cnic_transaction_url;
 
     /**
     * JazzCashClient constructor.
