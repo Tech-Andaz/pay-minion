@@ -148,10 +148,42 @@ class EasyPaisaAPI
         $endpoint = 'easypay-service/rest/v4/inquire-transaction';
         $method = 'POST';
         $requestData = [
-            'orderId' => "12345",
+            'orderId' => $orderID,
             'storeId' => $this->EasyPaisaClient->store_id,
             'accountNum' => $this->EasyPaisaClient->ewp_account_number,
         ];
+        $payload = $this->EasyPaisaClient->makeRequest($endpoint, $method, $requestData);
+        return $payload;
+    }
+    public function performWalletTransaction($order){
+        if((!isset($order['amount']) || $order['amount'] == "")){
+            throw new EasyPaisaException("Transaction Amount is missing.");
+        }
+        if (!is_numeric($order['amount']) || filter_var($order['amount'], FILTER_VALIDATE_FLOAT) === false) {
+            throw new EasyPaisaException("Transaction Amount must be a number or float.");
+        }
+        if((!isset($order['account_number']) || $order['account_number'] == "")){
+            throw new EasyPaisaException("Account Number is missing.");
+        }
+        if((!isset($order['email_address']) || $order['email_address'] == "")){
+            throw new EasyPaisaException("Email Address is missing.");
+        }
+        
+        $endpoint = 'easypay-service/rest/v4/initiate-ma-transaction';
+        $method = 'POST';
+        $requestData = array(
+            "orderId" => (isset($order['order_id']) && $order['order_id'] != "") ? $order['order_id'] : uniqid(),
+            "storeId" => $this->EasyPaisaClient->store_id,
+            "transactionAmount" => number_format($order['amount'],2),
+            "transactionType" => "MA",
+            "mobileAccountNo" => $order['account_number'],
+            "emailAddress" => $order['email_address'],
+            "optional1" => (isset($order['metafield_1']) && $order['metafield_1'] != "") ? $order['metafield_1'] : "",
+            "optional2" => (isset($order['metafield_2']) && $order['metafield_2'] != "") ? $order['metafield_2'] : "",
+            "optional3" => (isset($order['metafield_3']) && $order['metafield_3'] != "") ? $order['metafield_3'] : "",
+            "optional4" => (isset($order['metafield_4']) && $order['metafield_4'] != "") ? $order['metafield_4'] : "",
+            "optional5" => (isset($order['metafield_5']) && $order['metafield_5'] != "") ? $order['metafield_5'] : "",
+        );
         $payload = $this->EasyPaisaClient->makeRequest($endpoint, $method, $requestData);
         return $payload;
     }

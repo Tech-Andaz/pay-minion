@@ -11,6 +11,7 @@ class EasyPaisaClient
     public $username;
     public $password;
     public $ewp_account_number;
+    public $hash_key;
 
     /**
     * EasyPaisaClient constructor.
@@ -24,6 +25,7 @@ class EasyPaisaClient
         $this->environment = (isset($config['environment']) && in_array($config['environment'], ['sandbox','production'])) ? $config['environment'] : "production";
         $this->api_url = ($this->environment == 'production') ? "https://easypay.easypaisa.com.pk/" : "https://easypaystg.easypaisa.com.pk/";
         $this->store_id = (isset($config['store_id']) && $config['store_id'] != "") ? $config['store_id'] : throw new EasyPaisaException("Store ID is missing");
+        $this->hash_key = (isset($config['hash_key']) && $config['hash_key'] != "") ? $config['hash_key'] : throw new EasyPaisaException("Hash Key is missing");
         $this->ewp_account_number = (isset($config['ewp_account_number']) && $config['ewp_account_number'] != "") ? $config['ewp_account_number'] : throw new EasyPaisaException("EWP Account Number is missing");
         $this->return_url = (isset($config['return_url']) && $config['return_url'] != "") ? $config['return_url'] : "";
         $this->currency = (isset($config['currency']) && $config['currency'] != "") ? $config['currency'] : "PKR";
@@ -58,7 +60,6 @@ class EasyPaisaClient
             $url .= '?' . http_build_query($queryParams);
         }
         $ch = curl_init();
-
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

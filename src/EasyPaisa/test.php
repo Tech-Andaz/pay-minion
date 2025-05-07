@@ -7,11 +7,12 @@ use TechAndaz\EasyPaisa\EasyPaisaAPI;
 
 $EasyPaisaClient = new EasyPaisaClient(array(
     "environment" => "production", // Optional - Defaults to production. Options are: sandbox / production
-    "store_id" => "12345",
-    "return_url" => "https://techandaz.com/success", // Optional - Must be set here or during checkout link creation
-    "ewp_account_number" => "123456787",
-    "username" => "username",
-    "password" => "password"
+    "store_id" => "",
+    "return_url" => "", // Optional - Must be set here or during checkout link creation
+    "ewp_account_number" => "",
+    "username" => "",
+    "password" => "",
+    "hash_key" => ""
 ));
 
 $EasyPaisaAPI = new EasyPaisaAPI($EasyPaisaClient);
@@ -84,10 +85,25 @@ function createHostedCheckout($EasyPaisaAPI){
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-//Link Mobile Wallet
+//Verify Transaction
 function verifyTransaction($EasyPaisaAPI){
     try {
-        $response = $EasyPaisaAPI->transactionStatus(12345);
+        $response = $EasyPaisaAPI->transactionStatus("681b91387ce11");
+        return $response;
+    } catch (TechAndaz\EasyPaisa\EasyPaisaException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
+//Perform Wallet Transaction
+function performWalletTransaction($EasyPaisaAPI){
+    try {
+        $requestData = array(
+            "order_id" => "",
+            "amount" => 2,
+            "account_number" => "",
+            "email_address" => "",
+        );
+        $response = $EasyPaisaAPI->performWalletTransaction($requestData);
         return $response;
     } catch (TechAndaz\EasyPaisa\EasyPaisaException $e) {
         echo "Error: " . $e->getMessage() . "\n";
@@ -96,4 +112,5 @@ function verifyTransaction($EasyPaisaAPI){
 // print_r(initiateHostedCheckout($EasyPaisaAPI));
 // print_r(processHostedCheckout($EasyPaisaAPI));
 // print_r(createHostedCheckout($EasyPaisaAPI));
-print_r(verifyTransaction($EasyPaisaAPI));
+// print_r(verifyTransaction($EasyPaisaAPI));
+// print_r(performWalletTransaction($EasyPaisaAPI));
