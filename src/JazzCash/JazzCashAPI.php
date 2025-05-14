@@ -265,7 +265,12 @@ class JazzCashAPI
                 "pp_ResponseMessage" => curl_error($ch)
             );
         } else {
-            return json_decode($response,true);
+            $resp = json_decode($response,true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $resp;
+            } else {
+                throw new JazzCashException("Unparsable response from server: " . json_last_error_msg() . ". Response: " . $response);
+            }
         }
     }
     public function transactionStatus($transaction_reference){
@@ -303,7 +308,12 @@ class JazzCashAPI
                 "pp_ResponseMessage" => curl_error($ch)
             );
         } else {
-            return json_decode($response,true);
+            $resp = json_decode($response,true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $resp;
+            } else {
+                throw new JazzCashException("Unparsable response from server: " . json_last_error_msg() . ". Response: " . $response);
+            }
         }
     }
     public function refundCardTransaction($transaction_reference, $amount){
@@ -352,7 +362,12 @@ class JazzCashAPI
                 "pp_ResponseMessage" => curl_error($ch)
             );
         } else {
-            return json_decode($response,true);
+            $resp = json_decode($response,true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $resp;
+            } else {
+                throw new JazzCashException("Unparsable response from server: " . json_last_error_msg() . ". Response: " . $response);
+            }
         }
     }
     public function refundWalletTransaction($transaction_reference, $amount, $mpin){
@@ -406,7 +421,12 @@ class JazzCashAPI
                 "pp_ResponseMessage" => curl_error($ch)
             );
         } else {
-            return json_decode($response,true);
+            $resp = json_decode($response,true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $resp;
+            } else {
+                throw new JazzCashException("Unparsable response from server: " . json_last_error_msg() . ". Response: " . $response);
+            }
         }
     }
     public function walletTransactionCNIC($order){
@@ -509,7 +529,12 @@ class JazzCashAPI
                 "pp_ResponseMessage" => curl_error($ch)
             );
         } else {
-            return json_decode($response,true);
+            $resp = json_decode($response,true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $resp;
+            } else {
+                throw new JazzCashException("Unparsable response from server: " . json_last_error_msg() . ". Response: " . $response);
+            }
         }
     }
 }

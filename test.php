@@ -2,115 +2,152 @@
 
 require 'vendor/autoload.php';
 
-use TechAndaz\EasyPaisa\EasyPaisaClient;
-use TechAndaz\EasyPaisa\EasyPaisaAPI;
+use TechAndaz\JazzCash\JazzCashClient;
+use TechAndaz\JazzCash\JazzCashAPI;
 
-$EasyPaisaClient = new EasyPaisaClient(array(
-    "environment" => "production", // Optional - Defaults to production. Options are: sandbox / production
-    "store_id" => "",
-    "return_url" => "", // Optional - Must be set here or during checkout link creation
-    "ewp_account_number" => "",
-    "username" => "",
-    "password" => "",
-    "hash_key" => ""
+$JazzCashClient = new JazzCashClient(array(
+    "environment" => "sandbox", // Optional - Defaults to production. Options are: sandbox / production
+    "merchant_id" => "MC108944",
+    "password" => "5990v09a6d",
+    "integerity_salt" => "zx82t8029e",
+    "domain_code" => "TA", //max 3 character code to be appended for all Transaction Reference numbers 
+    "return_url" => "https://techandaz.com/success",
 ));
 
-$EasyPaisaAPI = new EasyPaisaAPI($EasyPaisaClient);
+$JazzCashAPI = new JazzCashAPI($JazzCashClient);
 
-//Initiate Hosted Checkout
-function initiateHostedCheckout($EasyPaisaAPI){
+//Create Checkout Link
+function createCheckoutLink($JazzCashAPI){
     try {
         $data = array(
-            "amount" => 25.33,
-            "order_id" => "12345", // Optional - Will generate unique ID if not provided
-            "email" =>  "contact@test.com", // Optional
-            "phone" =>  "1234567897988", // Optional
-            "bank_id" =>  "", // Optional
-            "expiry_datetime" =>  "", // Optional - Format: Ymd His
-            "return_url" =>  "", // Optional - Has to be provided either during initializing or here
-            "payment_method" =>  "", // Optional - Options are: OTC_PAYMENT_METHOD / MA_PAYMENT_METHOD / CC_PAYMENT_METHOD / QR_PAYMENT_METHOD / DD_PAYMENT_METHOD
+            "amount" => 25.30,
+            "bill_reference" =>  "billRef",
+            "transaction_reference" => "", // Optional - max 17 character length - domain_code will be added in the beggining - leave empty for auto generated
+            "description" => "description",
+            "date_time" => date("YmdHis"), // Optional - will use current time if not provided
+            "order_id" => "", // Optional - Will generate unique ID if not provided
+            "metafield_1" => "", //Optional Metadata for order
+            "metafield_2" => "", //Optional Metadata for order
+            "metafield_3" => "", //Optional Metadata for order
+            "metafield_4" => "", //Optional Metadata for order
+            "metafield_5" => "", //Optional Metadata for order
         );
-        $response_type = "follow"; // form / follow / redirect - Defaults to redirect, form will print form - redirect will print and execute form - follow will execute curl and return auth token 
-        $response = $EasyPaisaAPI->initiateHostedCheckout($data, $response_type);
+        $response_type = "redirect"; // redirect / form - Defaults to redirect, Redirect will automatically redirect user to payment page, form will return html form with fields and values
+        $response = $JazzCashAPI->createCheckoutLink($data, $response_type);
         return $response;
-    } catch (TechAndaz\EasyPaisa\EasyPaisaException $e) {
+    } catch (TechAndaz\JazzCash\JazzCashException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-//Process Hosted Checkout
-function processHostedCheckout($EasyPaisaAPI){
+//Process Response
+function processResponse($JazzCashAPI){
+    try {
+        $response = $JazzCashAPI->processResponse();
+        return $response;
+    } catch (TechAndaz\JazzCash\JazzCashException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
+//Mobile Account Linking TOKENIZATION
+function mobileAccountLinking($JazzCashAPI){
     try {
         $data = array(
-            "auth_token" => "123455667777778888",
-            "return_url" => ""
+            "account_number" => "03234896599",
         );
-        $response_type = "redirect"; // form / redirect - Defaults to redirect, form will print form - redirect will print and execute form
-        $response = $EasyPaisaAPI->processHostedCheckout($data, $response_type);
+        $response_type = "redirect"; // redirect / form - Defaults to redirect, Redirect will automatically redirect user to payment page, form will return html form with fields and values
+        $response = $JazzCashAPI->mobileAccountLinking($data, $response_type);
         return $response;
-    } catch (TechAndaz\EasyPaisa\EasyPaisaException $e) {
+    } catch (TechAndaz\JazzCash\JazzCashException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-//Create Hosted Checkout
-function createHostedCheckout($EasyPaisaAPI){
+//Mobile Account Transaction TOKENIZATION
+function linkedMobileAccountTransaction($JazzCashAPI){
     try {
         $data = array(
-            "amount" => 25.33,
-            "order_id" => "12345", // Optional - Will generate unique ID if not provided
-            "email" =>  "contact@test.com", // Optional
-            "phone" =>  "1234567897988", // Optional
-            "bank_id" =>  "", // Optional
-            "expiry_datetime" =>  "", // Optional - Format: Ymd His
-            "return_url" =>  "", // Optional - Has to be provided either during initializing or here
-            "payment_method" =>  "", // Optional - Options are: OTC_PAYMENT_METHOD / MA_PAYMENT_METHOD / CC_PAYMENT_METHOD / QR_PAYMENT_METHOD / DD_PAYMENT_METHOD
+            "amount" => 25.30,
+            "payment_token" => "LI0yTger3EgcVsX1aEzSQpCaOUl8mN1w",
+            "bill_reference" =>  "billRef",
+            "transaction_reference" => "", // Optional - max 17 character length - domain_code will be added in the beggining - leave empty for auto generated
+            "description" => "description",
+            "date_time" => date("YmdHis"), // Optional - will use current time if not provided
+            "order_id" => "", // Optional - Will generate unique ID if not provided
+            "metafield_1" => "", //Optional Metadata for order
+            "metafield_2" => "", //Optional Metadata for order
+            "metafield_3" => "", //Optional Metadata for order
+            "metafield_4" => "", //Optional Metadata for order
+            "metafield_5" => "", //Optional Metadata for order
         );
-        $response_type = "follow"; // form / follow / redirect - Defaults to redirect, form will print form - redirect will print and execute form - follow will execute curl and return auth token 
-        $response = $EasyPaisaAPI->initiateHostedCheckout($data, $response_type);
-        if($response['status'] == 1){
-            try {
-                $data = array(
-                    "auth_token" => $response['auth_token'],
-                    "return_url" => ""
-                );
-                $response_type = "form"; // form / redirect - Defaults to redirect, form will print form - redirect will print and execute form
-                $response = $EasyPaisaAPI->processHostedCheckout($data, $response_type);
-                return $response;
-            } catch (TechAndaz\EasyPaisa\EasyPaisaException $e) {
-                echo "Error: " . $e->getMessage() . "\n";
-            }
-        } else {
-            return $response;
-        }
-    } catch (TechAndaz\EasyPaisa\EasyPaisaException $e) {
-        echo "Error: " . $e->getMessage() . "\n";
-    }
-}
-//Verify Transaction
-function verifyTransaction($EasyPaisaAPI){
-    try {
-        $response = $EasyPaisaAPI->transactionStatus("681b91387ce11");
+        $response = $JazzCashAPI->linkedMobileAccountTransaction($data);
         return $response;
-    } catch (TechAndaz\EasyPaisa\EasyPaisaException $e) {
+    } catch (TechAndaz\JazzCash\JazzCashException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-//Perform Wallet Transaction
-function performWalletTransaction($EasyPaisaAPI){
+//Transaction Status
+function transactionStatus($JazzCashAPI){
     try {
-        $requestData = array(
-            "order_id" => "",
-            "amount" => 2,
-            "account_number" => "",
-            "email_address" => "",
+        $transaction_reference = "TA2024072313140819";
+        $response = $JazzCashAPI->transactionStatus($transaction_reference);
+        return $response;
+    } catch (TechAndaz\JazzCash\JazzCashException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
+//Card Transaction Refund
+function refundCardTransaction($JazzCashAPI){
+    try {
+        $transaction_reference = "TREF2022051812564132";
+        $amount = 100;
+        $response = $JazzCashAPI->refundCardTransaction($transaction_reference, $amount);
+        return $response;
+    } catch (TechAndaz\JazzCash\JazzCashException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
+//Wallet Transaction Refund
+function refundWalletTransaction($JazzCashAPI){
+    try {
+        $transaction_reference = "T20220518150213";
+        $amount = 100;
+        $mpin = "1234";
+        $response = $JazzCashAPI->refundWalletTransaction($transaction_reference, $amount, $mpin);
+        return $response;
+    } catch (TechAndaz\JazzCash\JazzCashException $e) {
+        echo "Error: " . $e->getMessage() . "\n";
+    }
+}
+
+//Wallet Transaction CNIC
+function walletTransactionCNIC($JazzCashAPI){
+    try {
+        $data = array(
+            "account_number" => "03123456789", //Customers Account Number
+            "cnic" => "345678", //Customers CNIC Number
+            "amount" => 25.30,
+            "bill_reference" =>  "billRef",
+            "transaction_reference" => "", // Optional - max 17 character length - domain_code will be added in the beggining - leave empty for auto generated
+            "description" => "description",
+            "date_time" => date("YmdHis"), // Optional - will use current time if not provided
+            "order_id" => "", // Optional - Will generate unique ID if not provided
+            "metafield_1" => "", //Optional Metadata for order
+            "metafield_2" => "", //Optional Metadata for order
+            "metafield_3" => "", //Optional Metadata for order
+            "metafield_4" => "", //Optional Metadata for order
+            "metafield_5" => "", //Optional Metadata for order
         );
-        $response = $EasyPaisaAPI->performWalletTransaction($requestData);
+        $response = $JazzCashAPI->walletTransactionCNIC($data);
         return $response;
-    } catch (TechAndaz\EasyPaisa\EasyPaisaException $e) {
+    } catch (TechAndaz\JazzCash\JazzCashException $e) {
         echo "Error: " . $e->getMessage() . "\n";
     }
 }
-// print_r(initiateHostedCheckout($EasyPaisaAPI));
-// print_r(processHostedCheckout($EasyPaisaAPI));
-// print_r(createHostedCheckout($EasyPaisaAPI));
-// print_r(verifyTransaction($EasyPaisaAPI));
-// print_r(performWalletTransaction($EasyPaisaAPI));
+// echo json_encode(createCheckoutLink($JazzCashAPI));
+// echo json_encode(processResponse($JazzCashAPI));
+// echo json_encode(mobileAccountLinking($JazzCashAPI));
+// echo json_encode(linkedMobileAccountTransaction($JazzCashAPI));
+// echo json_encode(transactionStatus($JazzCashAPI));
+echo json_encode(walletTransactionCNIC($JazzCashAPI));
+// echo json_encode(refundCardTransaction($JazzCashAPI));
+// echo json_encode(refundWalletTransaction($JazzCashAPI));
+?>
