@@ -269,7 +269,7 @@ class JazzCashAPI
             if (json_last_error() === JSON_ERROR_NONE) {
                 return $resp;
             } else {
-                throw new JazzCashException("Unparsable response from server: " . json_last_error_msg() . ". Response: " . $response);
+                throw new JazzCashException("Unparsable response from server: " . json_last_error_msg() . ". Response: " . strip_tags($response));
             }
         }
     }
@@ -312,7 +312,7 @@ class JazzCashAPI
             if (json_last_error() === JSON_ERROR_NONE) {
                 return $resp;
             } else {
-                throw new JazzCashException("Unparsable response from server: " . json_last_error_msg() . ". Response: " . $response);
+                throw new JazzCashException("Unparsable response from server: " . json_last_error_msg() . ". Response: " . strip_tags($response));
             }
         }
     }
@@ -366,7 +366,7 @@ class JazzCashAPI
             if (json_last_error() === JSON_ERROR_NONE) {
                 return $resp;
             } else {
-                throw new JazzCashException("Unparsable response from server: " . json_last_error_msg() . ". Response: " . $response);
+                throw new JazzCashException("Unparsable response from server: " . json_last_error_msg() . ". Response: " . strip_tags($response));
             }
         }
     }
@@ -425,7 +425,7 @@ class JazzCashAPI
             if (json_last_error() === JSON_ERROR_NONE) {
                 return $resp;
             } else {
-                throw new JazzCashException("Unparsable response from server: " . json_last_error_msg() . ". Response: " . $response);
+                throw new JazzCashException("Unparsable response from server: " . json_last_error_msg() . ". Response: " . strip_tags($response));
             }
         }
     }
@@ -533,7 +533,7 @@ class JazzCashAPI
             if (json_last_error() === JSON_ERROR_NONE) {
                 return $resp;
             } else {
-                throw new JazzCashException("Unparsable response from server: " . json_last_error_msg() . ". Response: " . $response);
+                throw new JazzCashException("Unparsable response from server: " . json_last_error_msg() . ". Response: " . strip_tags($response));
             }
         }
     }
